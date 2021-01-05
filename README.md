@@ -1,14 +1,14 @@
 ## 关于这里
 
 - 博客是hexo+GitHub+Gitee双平台搭建，国内网速访问外网较慢可以点击[Seals6.gitee.io](https://seals6.gitee.io/) 
+
 - 也可以访问[github.io](https://seals6.github.io/)
 
 - 由于博客目录框架限制，自己不太懂html，不能进行源代码修改，随着题目越来越多所以不能正常显示所有题目与大纲。
+
 - 现在已经将各个平台的刷题wp迁移至语雀平台，可以点击👉[Seals6的语雀](https://www.yuque.com/seals6)链接进行查看，等我将框架修改后再迁移回来。
 
-<img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2021-01-05%20%E4%B8%8B%E5%8D%884.48.47.png" style="zoom:50%;" />
-
-
+  
 
 ## 关于wp
 
