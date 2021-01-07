@@ -1,17 +1,6 @@
----
-title: Bugku-misc篇
-date: 2020-12-31 14:27:58
-Updated: 2020-12-31
-tags:
-	- misc
-	- wp
-categories: 
-    - Bugku
----
+# Bugku-writeup
 
-## Bugku-misc
-
-PS：🌟我会持续更新记录bugku中的每道wp，更高效的方法可以对题干进行直接ctrl+F进行关键词搜索哦。
+## misc
 
 ### Photo的自我修养
 

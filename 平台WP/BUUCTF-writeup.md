@@ -1303,3 +1303,41 @@ print(sort_by_value(result))
 
    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2021-01-05%20%E4%B8%8B%E5%8D%8812.52.11.png)
 
+### [RoarCTF2019]黄金6年
+
+1. 下载解压出来一个视频，拖进010editor中，发现末尾有一串Base64
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/5.PNG)
+
+2. 解码出来有Rar压缩包标识，转成hex，导入010
+
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/6.PNG" style="zoom:50%;" />
+
+3. 发现解压需要密码，应该是在视频里面有隐藏着密码，一帧一帧的观看，发现有二维码，将图片截取出来，调一下对比度和亮度就可以扫描了
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/7.PNG)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/2.PNG)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/3.PNG)
+
+4. 视频里一共有四个二维码，最后一个很难找，因为书本身就是黑色的，参考大佬可以拖进pr调一下RGB曲线
+
+<img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/9.PNG" style="zoom:50%;" />
+
+5. 4个二维码扫出来，解压密码是`iwantplayctf`
+6. 解压，打开txt就可以了`roarctf{CTF-from-RuMen-to-RuYuan}`
+
+
+
+### [ACTF新生赛2020]NTFS数据流
+
+1. 解压出来499个txt文档，写着`flag is not here`
+
+2. 题目提示NTFS数据流，那就是ntfs隐写了，直接ntfsstreamseditor扫描一波，导出隐写内容`ACTF{AAAds_nntfs_ffunn?}`
+
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210107230444.PNG" style="zoom:50%;" />
+
+   
+
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210107230501.PNG" style="zoom:1000%;" />
