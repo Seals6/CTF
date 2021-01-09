@@ -1151,6 +1151,8 @@ print(sort_by_value(result))
 
 2. 在套一下`flag{welcome to CTF}`
 
+
+
 ### zip
 
 1. 解压出来又有加密的68个压缩包，拖进010看了下不是伪加密，打开压缩包发现都只有4个字节的txt文本
@@ -1341,3 +1343,91 @@ print(sort_by_value(result))
    
 
    <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210107230501.PNG" style="zoom:1000%;" />
+
+
+
+### 间谍启示录
+
+1. 下载出来一个ISO，拖进kali，foremost一下
+
+   `foremost -T ****.iso`
+
+2. 分离出来一个几个文件，但是压缩包是重点
+
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210108113806.PNG" style="zoom:50%;" />
+
+3. 打开压缩包发现一个flag.exe，解压出来
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210108113909.PNG)
+
+4. 运行flag.exe，发现生成了隐藏文件flag.txt
+
+   `Flag{379:7b758:g7dfe7f19:9464f:4g9231}`
+
+![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210108114307.PNG)
+
+
+
+### 我吃三明治
+
+1. 解压出来一张三明治图片，拖进010查看
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210108124026.PNG)
+
+2. 发现这里第一张图片`FF D9`末尾组合了一串类似Base家族的加密，和一张图片，我们将其手动分离开
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210108124249.PNG)
+
+3. 这里发现是全部大写，并带有数字，应该是base32加密，我们进行解密`flag{6f1797d4080b29b64da5897780463e30}`
+
+<img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210108124429.PNG" style="zoom:50%;" />
+
+
+
+### [V&N2020 公开赛]拉胯的三条命令
+
+1. 下载解压是个zip，我们添加后缀名为1.zip，解压发现是流量分析
+
+2. 解压出来txt文档提示`请将开放端口按由小到大顺序写入flag中 如：开放1、22、234端口flag{122234}`
+
+3. 用wireshark打开，发现应该是端口扫描，我们在wireshark编辑-首选项中添加端口列
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210108130902.png)
+
+4. 添加完成后，我们对端口进行降序，寻找`ACK确认标志`，众所周知在`TCP三次握手`中，`[SYN]`标志表示建立连接，`[ACK]`表示响应，查看开放端口，肯定会返回`[ACK]`标志，红色的代表异常没有回应
+
+![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210108131204.png)
+
+5. 这里我们就找到了21号端口，继续向下手工寻找
+
+   ```shell
+   #手工查找的所有端口
+   21
+   22
+   631
+   801
+   3306
+   ```
+
+6. 拼接一下`flag{21226318013306}`
+
+7. 当然还有Linux下的方法，由于没有去做尝试，先不写，等后期实验后再进行更新
+
+
+
+### [SUCTF2018]single dog
+
+1. 下载解压出来一张图片，拖进010查看信息
+
+2. 发现最后有`50 4B`的标识，拖进kali使用foremost工具分离一下
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210109154435.png)
+
+3. 分离出一个压缩包，解压出txt
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210109154537.png)
+
+4. 这是aaencode加密，[在线解密](http://www.atoolbox.net/Tool.php?Id=703)一下,`flag{happy double eleven}`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210109154706.png)
+

@@ -23,7 +23,7 @@
 
 - BUUCTF
 
-  - Misc	 刷题上传中  `82/300 `
+  - Misc	 刷题上传中  `86/300 `
 
   - Crypto  暂无计划
 
@@ -42,3 +42,8 @@
   - Misc 规划中
   - Crypto 规划中
   - Web 规划中
+  
+  
+
+- ctf.show
+  - Web 刷题中
