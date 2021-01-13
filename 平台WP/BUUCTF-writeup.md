@@ -1431,3 +1431,67 @@ print(sort_by_value(result))
 
    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210109154706.png)
 
+
+
+### [安洵杯 2019]吹着贝斯扫二维码
+
+1. 下载解压出来很多个文件和一个flag.zip，先将前几个文件拖进010，发现都是`FF D8`开头，是JPG图片
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111153443.png)
+
+2. 我们制作个bat，批量添加后缀名
+
+   ```shell
+   @echo off
+   ren * *.jpg
+   ```
+
+3. 发现图片都是二维码的组成部分，应该是要把二维码拼起来，在010中发现图片末尾有编号。
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111153732.png)
+
+4. 这里有2种方法，可以手工拼接，也可以做个py脚本，我这里是手工PS拼接的，后期在尝试写py脚本
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111154045.png)
+
+6. 扫出来一串base的hint信息，应该是跟flag.zip压缩包密码有关
+
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111154946.png" style="zoom:50%;" />
+
+7. 我们打开flag.zip，发现有一行类似base32的(全部大写英文字母)注释
+
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111155136.png" style="zoom:50%;" />
+
+7. 我们base32解码出来一段hex，导入至010，发现一串密文
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111155416.png)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111155506.png)
+
+8. 意识到刚刚的二维码hint，发现解密的顺序和我正好是倒着的，base家族中好像没有base13，我尝试使用Rot13进行解密
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111155715.png)
+
+9. 在根据他的顺序进行base85>base64>base85得到压缩包密码
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111155841.png)
+
+10. 解压压缩包，打开文档`flag{Qr_Is_MeAn1nGfuL}`
+11. 这道题手工拼接二维码需要花费大量时间，脚本应该更快
+
+
+
+### 从娃娃抓起
+
+```shell
+那句话就是邓小平说的 '计算机要从娃娃抓起'
+
+0086   1562   2535   5174             中文电码
+ 人      工     智     能
+bnhn s wwy vffg vffg rrhy fhnv        五笔编码
+也   要 从   娃   娃   抓   起
+
+请将你得到的这句话转为md5提交，md5统一为32位小写。
+flag{3b4b5dccd2c008fe7e2664bd1bc19292}
+```
+
