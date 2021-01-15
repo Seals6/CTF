@@ -2,6 +2,18 @@
 
 ## misc
 
+### ping
+
+1. 解压出来流量包，扔进wireshark，发现是ping流量包
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114212621.png)
+
+2. 发现每个流量包data附带一个字，前面四个包拼接起来就是`flag`，由于是icmp，没法用追踪功能，手撸`flag{dc76a1eee6e3822877ed627e0a04ab4a}`
+
+   如果有其他更快方法，会在更新
+
+   
+
 ### 被勒索了
 
 1. 下载解压出来是个火绒的文件夹
@@ -121,5 +133,33 @@
 
 
 
+### 有黑白棋的棋盘
 
+1. 下载出来一个压缩包，解压出来三个压缩包，就疯狂套娃呗
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114213348.png)
+
+2. 第一个压缩包写了`4easynum`应该是爆破了，上工具密码`7760`
+
+3. 解压出来一个图片和一个hint
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114213552.png)
+
+   ![](C:\Users\Seals6\AppData\Roaming\Typora\typora-user-images\image-20210114213617768.png)
+
+4. 拖进010，末尾有一串base64，解出来翻译出来意思是精灵，结合题目提示应该古精灵语
+
+   ![](https://bkimg.cdn.bcebos.com/pic/f7246b600c338744de6d0bcf550fd9f9d62aa0dc?x-bce-process=image/watermark,image_d2F0ZXIvYmFpa2U5Mg==,g_7,xp_5,yp_5)
+
+5. 解出来`bugkupasswd`，刚刚提示了这个密码是棋盘的压缩包，解压出来，一张围棋图片，拖进010，发现备注里又有一个hint，base58转一下，我确实没看懂
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114214328.png)
+
+6. 问了出题人，意思是密码表在围棋中，这里因为图片前面很像`canyou???`以为是猜字符卡了很久，后面问了一血Tokeii大佬，说是图片中围棋的提子，吃了不会下围棋的亏解出来`goodctfer`
+
+![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114214452.png)
+
+7. 解压出来一张图片，压缩包题目height提示很明显，应该是修改了高，拖进010修改一下高度`flag{new_bugku_is_very_cool}`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114215016.png)
 
