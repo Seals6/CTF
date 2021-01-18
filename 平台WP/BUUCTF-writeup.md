@@ -1495,3 +1495,71 @@ bnhn s wwy vffg vffg rrhy fhnv        五笔编码
 flag{3b4b5dccd2c008fe7e2664bd1bc19292}
 ```
 
+
+
+###  [DDCTF2018](╯°□°）╯︵ ┻━┻
+
+1. 下载出来txt，打开
+
+   ```shell
+   (╯°□°）╯︵ ┻━┻
+   50pt
+   
+   (╯°□°）╯︵ ┻━┻
+   
+   d4e8e1f4a0f7e1f3a0e6e1f3f4a1a0d4e8e5a0e6ece1e7a0e9f3baa0c4c4c3d4c6fbb9b2b2e1e2b9b9b7b4e1b4b7e3e4b3b2b2e3e6b4b3e2b5b0b6b1b0e6e1e5e1b5fd
+   ```
+
+2. 下面一串hex很亮眼，我们每隔2个分隔开转为10进制，发现都是200以上的，我们减去128转出字符串，好像有戏，做个脚本
+
+   ```python
+   def hex_str(str):
+       hex_str_list=[]
+       for i in range(0,len(str)-1,2):
+           hex_str=str[i:i+2]
+           hex_str_list.append(hex_str)
+       print("hex列表：%s\n"%hex_str_list)
+       hex_to_str(hex_str_list)
+   def hex_to_str(hex_str_list):
+       int_list=[]
+       dec_list=[]
+       flag=''
+       for i in range(0,len(hex_str_list)):
+           int_str=int('0x%s'%hex_str_list[i],16)
+           int_list.append(int_str)
+           dec_list.append(int_str-128)
+       for i in range(0,len(dec_list)):
+           flag += chr(dec_list[i])
+           print("转化为十进制int列表：%s\n"%int_list)
+           print("-128得到ASCII十进制dec列表：%s\n"%dec_list)
+           print('最终答案：%s'%flag)
+   if __name__ == "__main__":
+       str = 'd4e8e1f4a0f7e1f3a0e6e1f3f4a1a0d4e8e5a0e6ece1e7a0e9f3baa0c4c4c3d4c6fbb9b2b2e1e2b9b9b7b4e1b4b7e3e4b3b2b2e3e6b4b3e2b5b0b6b1b0e6e1e5e1b5fd'
+       print("字符串长度：%s"%len(str))
+       hex_str(str)
+   ```
+
+3. 最终结果`That was fast! The flag is: DDCTF{922ab9974a47cd322cf43b50610faea5}`
+
+
+
+### 小易的U盘
+
+1. 下载下来是个ISO文件，拖进010，发现文件头是Rar压缩包，改为压缩包头
+
+2. 打开压缩包预览有很多autoflag.exe，解压出来却没有了，应该是隐藏文件，显示-显示隐藏文件
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210115113405.png)
+
+3. 有个autorun.inf，配置文件，用记事本打开
+
+   ```shell 
+   [AutoRun]
+   Open=autoflag - 副本 (32)
+   ```
+
+4. 找到副本32，打开却显示打开失败，扔进ida，找到main0主函数发现flag
+
+   ![](https://img-blog.csdnimg.cn/20201107214508383.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L21vY2h1Nzc3Nzc3Nw==,size_16,color_FFFFFF,t_70#pic_center)
+
+`flag{29a0vkrlek3eu10ue89yug9y4r0wdu10}`

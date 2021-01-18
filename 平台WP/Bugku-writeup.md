@@ -163,3 +163,141 @@
 
    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114215016.png)
 
+### baby_misc
+
+1. 解压出来三个文件，一个加密压缩包，一个jpg，一个hint文档，我们打开txt
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117152323.png)
+
+2. 我们打开jpg，发现无法预览，猜测文件头格式损坏，拖进010发现文件头是`FF D8`，文件尾是png格式，所以我们改为png文件头`89 50 4E 47 0D 0A 1A 0A 00 00 00 0D`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117152717.png)
+
+   
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117152759.png)
+
+3. 发现图片能够正常预览，仔细观察文件格式发现里面还有一张png图片，手动分离出来
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117153030.png)
+
+4. 于是发现是一摸一样的图片，结合py3提示应该是盲水印隐写
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117153201.png)
+
+5. 扔进kali，跑一下脚本，得到flag.png
+
+   ```shell
+   python3 bwmforpy3.py decode 1.png 2.png flag.png
+   ```
+
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117153408.png" style="zoom:50%;" />
+
+6. 需要放大仔细看得到密码`passwd:wowblind`，解压压缩包，得到一个加密的flag.zip和password.txt，打开txt
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117153822.png)
+
+7. 出题人写错了应该e=65537，上RSA脚本
+
+   ```python
+   # 分解模数n
+   def rsa_moder(n):
+       base = 2
+       while base < n:
+           if n % base == 0:
+               return base, n // base
+           base += 1
+   
+   
+   # 求欧拉函数f(n)
+   def rsa_get_euler(prime1, prime2):
+       return (prime1 - 1) * (prime2 - 1)
+   
+   
+   # 求私钥
+   def rsa_get_key(e, euler):
+       k = 1
+       while True:
+           if (((euler * k) + 1) % e) == 0:
+               return (euler * k + 1) // e
+           k += 1
+   
+   
+   # 根据n,e计算d(或根据n,d计算e)
+   def get_rsa_e_d(n, e=None, d=None):
+       if e is None and d is None:
+           return
+   
+       arg = e
+       if arg is None:
+           arg = d
+   
+       primes = rsa_moder(n)
+       p = primes[0]
+       q = primes[1]
+   
+       d = rsa_get_key(arg, rsa_get_euler(p, q))
+   
+       return d
+   
+   
+   def test():
+       str_fmt = 'n: {:<10} e: {:<10} d: {:<10}'
+   
+       # 导入rsa库
+       import rsa as rsa
+       key = rsa.newkeys(24)
+   
+       # 产生rsa密钥对
+       if isinstance(key[1], rsa.PrivateKey):
+           print(str_fmt.format(key[1].n, key[1].e, key[1].d))
+   
+       n = 21321423135312411313
+       e = 65537
+       d = get_rsa_e_d(n, e, None)
+       print(str_fmt.format(n, e, d))
+   
+   
+   if __name__ == '__main__':
+       test()
+       
+   #解出来 
+   n: 21321423135312411313 e: 65537      
+   d: 1653347504416359113
+   ```
+   
+   解压密码就为`1653347504416359113`
+   
+8. 解压flag压缩包，得到一个flag.txt
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117155909.png)
+
+9. 这个应该是base64隐写，但是把等号转换为了加号，使用`ctrl+h`替换+号，上base64stego脚本
+
+   ```shell
+   #base64隐写解密py
+   base64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+   flag=''
+   with open('1.txt','r') as f:
+       for line in f.readlines():
+           line=line[:-1]
+           num=line.count('=')
+           if num == 0 :
+               continue
+           lastchar = line[-(num+1)]
+           
+           #print(line,num,lastchar)
+           myindex = base64chars.index(lastchar)
+           #print(myindex)
+           bin_str = bin(myindex)[2:].zfill(6)
+           #print(bin_str)
+           flag+=bin_str[6-2*num:]
+           #print(bin_str[6-2*num:])
+   print(''.join([chr(int(flag[i:i + 8], 2)) for i in range(0, len(flag), 8)]))
+   ```
+
+10. 解出来`bgtu{0cfguo_3}kdr`，因为提交格式为`Bugku{}`应该是栅栏密码，普通型试过不对，应该是w型栅栏密码，成功`bugku{g0od_ctf3r}`提交时要把b改为大写
+
+    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117160353.png)
+
+   
