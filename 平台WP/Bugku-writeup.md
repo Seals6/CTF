@@ -12,7 +12,59 @@
 
    如果有其他更快方法，会在更新
 
+
+
+### 赛博朋克
+
+1. 解压出来有加密，但没给提示，怀疑是伪加密，拖进010修改原文件目录去全局加密位置
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120214405.png)
+
+2. 解压出来一张图片png，拖进010，发现末尾有hint
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120214506.png)
+
+3. 找了几个软件，发现是中文的图片隐写助手，[下载地址](http://www.greenxf.com/soft/279692.html)
+
+   `flag{Hel1o_Wor1e}`
+
+   复现的时候没复现出来，不太清楚这个是什么隐写原理，后期研究下
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120214756.png)
+
    
+
+### 放松一下 
+
+1. 解压出来，两个压缩包，一个password压缩包和一个加密压缩包
+
+2. 继续解压password压缩包，发现是经典游戏iwanna
+
+3. 进入游戏会选择关卡，运行游戏时每个关卡都会留下save文件，把save文件拖进010观察
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118205106.png)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118205136.png)
+
+4. 通过第一关后发现在图中标记位变为了` 32`，应该时代表着关卡，每过一个关卡就会加一我们改为33，运行下一关`R`键重新载入就有password
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118205345.png)
+
+5. 我们改为33，原地去世，`R`键重新载入就有password
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118203927.png)
+
+   
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118203914.png)
+
+5. 解压另一个压缩包，刷新提示很明显，就是F5隐写，txt文档中的password的emoji就是base100，解密后`66666666`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118204240.png)
+
+6. 打开提取的output.txt`bugku{F5_and_i_wanna_is_so_cool}`
+
+
 
 ### 被勒索了
 

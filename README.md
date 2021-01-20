@@ -23,7 +23,7 @@
 
 - BUUCTF
 
-  - Misc	 刷题上传中  `87/300 `
+  - Misc	 刷题上传中  `90/300 `
 
   - Crypto  暂无计划
 
@@ -32,7 +32,7 @@
     
 
 - Bugku
-  - Misc   刷题上传中
+  - Misc   刷题上传中 
   - Crypto   刷题中
   - Web   暂无计划
 
@@ -47,4 +47,4 @@
 
 - ctf.show
   
-  - Web 刷题中
+  - Web入门 刷题中

@@ -1563,3 +1563,47 @@ flag{3b4b5dccd2c008fe7e2664bd1bc19292}
    ![](https://img-blog.csdnimg.cn/20201107214508383.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L21vY2h1Nzc3Nzc3Nw==,size_16,color_FFFFFF,t_70#pic_center)
 
 `flag{29a0vkrlek3eu10ue89yug9y4r0wdu10}`
+
+
+
+### [ACTF新生赛2020]swp
+
+
+
+1. 下载解压出流量包，扔进wireshark
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118171434.png)
+
+2. TCP流量太多，我们导出HTTP内容对象
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118171533.png)
+
+3. 发现有个secret.zip和hint.html，打开zip发现是加密的，hint提示不需要`you don't need password`所以应该是伪加密
+
+4. 修改文件加密位，解压出来一个flag文件和flag.swp，穷举法把swp拖进010发现flag`actf{c5558bcf-26da-4f8b-b181-b61f3850b9e5}`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118172042.png)
+
+
+
+### 百里挑一
+
+1. 解压出来一个流量包，打开发现好像是传输图片，导出对象-HTTP
+
+![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120144753.png)
+
+2. 发现很多壁纸图片，一个一个看不太现实，将图片复制到kali中使用`exitool`查看
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120145342.png)
+
+3. 提示还有一半，这里看了下大佬的wp，在流量包中的tcp114流中，但是这个怎么找到的？很奇怪？
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120145500.png)
+
+4. 还有一个大佬使用`strings -el results.pcap`查了一下-el这个还是不太懂，希望有大佬讲讲
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120145750.png)
+
+<img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120145825.png" style="zoom:50%;" />
+
+`flag{ae58d0408e26e8f26a3c0589d23edeec}`
