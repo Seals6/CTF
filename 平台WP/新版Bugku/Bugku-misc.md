@@ -1,6 +1,6 @@
-# Bugku-writeup
+# Bugku-misc
 
-## misc
+## misc系列
 
 ### ping
 
@@ -20,21 +20,46 @@
 
    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120214405.png)
 
-2. 解压出来一张图片png，拖进010，发现末尾有hint
+2. 解压出来txt，发现是png文件，拖进010转成图片png，发现末尾有hint
 
    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120214506.png)
 
 3. 找了几个软件，发现是中文的图片隐写助手，[下载地址](http://www.greenxf.com/soft/279692.html)
 
-   `flag{Hel1o_Wor1e}`
+4. 后期复现了一下，这个是LSB隐写，用stegsolve也可以打开
 
-   复现的时候没复现出来，不太清楚这个是什么隐写原理，后期研究下
+   `flag{Hel1o_Wor1e}`
 
    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120214756.png)
 
+
+
+
+### 贝斯手
+
+1. 解压出来，一个加密的压缩包一张图片和介绍.txt，应该要在外面找密码,打开txt文件，发现作者添加了换行，在最后有hint
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202182933.png)
+
+2. 这里可以有两种做法，密码是年份，只有四位，可以直接爆破，还有一种文档写了女主参加的电影和图片可以直接搜索出来，我直接爆破密码`1992`
+
+3. 解压flag.txt出来
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202183213.png)
+
+4. 前面数字应该对应某种加密方式，`cC`这里后面明显分成了两半，应该是两种加密方法相加组合而成
+
+5. 前面一半类似hex，并且有32位，应该是MD5加密，后面类似base家族，`58`提示应该是base58
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202183925.png)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202184300.png)
+
+6. 拼接一下`flag{this_is_md5_and_base58}`
+
    
 
-### 放松一下 
+### 放松一下吧
 
 1. 解压出来，两个压缩包，一个password压缩包和一个加密压缩包
 
@@ -109,6 +134,117 @@
    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111142453.png)
 
    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111142519.png)
+
+### baby_flag.txt
+
+前言：又是棋王mumuzi师傅的题
+
+1. 解压出来一个txt，打开`JFIF`标识，改为jpg拖进010
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202174814.png)
+
+2. 发现末尾有`raR`开头标识，怀疑文件头被修改，手动分离出来
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202175145.png)
+
+3. 修复Rar文件头`52 21 72 21`保存为rar文件，打开压缩包发现加密了
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202175604.png)
+
+4. 在010中发现末尾有一串hex，解码后，base64再解一次发现并无卵用
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202175710.png)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202180002.png)
+
+5. 这里想起bugku题目提示还可以再高一点，应该是还可以修改图片高度
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202180108.png)
+
+6. 我们找到图片属性高度转为hex，在010中进行搜索对应位置，改高度
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202180658.png)
+
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202180739.png" style="zoom:50%;" />
+   
+7. 密码`0q1W2e3R4t`，解压压缩包，打开txt
+   
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202181037.png)
+
+8. 这里提示`ugly programming language`应该是某种编程语言，google下，发现是`Malbolge`
+   
+   [Malbolge在线编译](https://malbolge.doleczek.pl/)
+   
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202181544.png)
+   
+   
+   
+   `bugku{what_An_U91y_pro9ramming_lAngUa9e}`
+   
+   
+
+### 善用工具
+
+前言：这道题可把我给整蒙了，自己做的是非预期解法，后面问了出题人预期解法
+
+我这里先说我的解法
+
+1. 这里解压出来3个文件，一个hint.png，用word打开，里面给了一串没见过的字符串，我也不知道是啥`8:V5Y:7,Y,3MU=$8D:D%11&9O6BY .G,M`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202170503.png)
+
+2. 前面无解没思路，打开压缩包发现加密了，应该不是伪加密，还有一张图片，拖进010，发现末尾有base64
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202170725.png)
+
+3. 我这里尝试进行base64解码，并不是常见的内容，根据题目善用工具，应该是某种工具加密了，这里我使用google对前六个字母进行搜索`VVGEC8`，发现了个类似的问题
+
+   ps：别用百度，我试过了
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202170915.png)
+
+4. 这个问题是说图片结尾后面跟了base64字母与我搜索的`VVGEC8`一样，是个软件`Free File Camouflage`
+
+   [下载地址](http://www.myportablesoftware.com/freefilecamouflage.aspx)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202171439.png)
+
+5. 有工具就好办了，选择解密一把梭
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202171645.png)
+
+6. 打开解密出来的的doc，显示`远在天边近在眼前`但是却没有密码，应该是隐藏了文字，我们设置显示隐藏文字
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202171931.png)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202172004.png)
+
+7. 解压压缩包，压缩包注释里提示是webp格式，图片填上后缀名
+
+8. webp隐写，扔进kali使用stegpy工具
+
+   ```shell
+   stegpy csgo.webp
+   bugku{rea1ly_miss_yoU}
+   ```
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202172458.png)
+
+   
+
+   预期解法
+
+   这里说一下预期解法，其实就是解出hint是啥，问了出题人，先用uuencode解码，在进行base85，这里我用py脚本解码时，总是某个字符报错，应该是编码的问题，google找了2个解码网站
+
+   [UUencode](https://www.dcode.fr/uu-encoding)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202173122.png)
+
+   [base85](https://www.better-converter.com/Encoders-Decoders/ASCII85-Decoder)
+
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202173227.png" style="zoom:50%;" />
+
+
 
 ### 乌云邀请码
 
@@ -353,3 +489,95 @@
     ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117160353.png)
 
    
+
+### 花点流量听听歌
+
+1. 此题来自棋王Mumuzi，下载发现是一段MP3，快进听歌的时候发现最后声音有点不对，拖进au查看频谱发现`Beaufort Cipher` 上网搜了一下是个加密方式
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202122307.png)
+
+2. 我们将音乐拖入010中，发现末尾有`PK`标识，手动分离压缩包，发现末尾还有一段hint`pay attention,After encryption is fsjcwymauudmwogqbdrsd` 意思是这个是密文，要去找key才能解出明文
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202122425.png)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202122621.png)
+
+3. 我们将压缩包解压出来，打开flag发现加密了，应该是要找密码，密码应该与上面的hint明文有关
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202122713.png)
+
+4. 用wireshark打开流量包，发现是USB流量
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202122904.png)
+
+5. 根据HID发现，键盘数据包的数据长度为8个字节，敲击键盘信息在第3个字节，应该是键盘的流量包
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202123318.png)
+
+6. 这里可以对照官方的文档进行手动翻译，我嫌麻烦，这里采用的南方大佬的脚本来做的，先将流量包扔进kali ，将数据导出成1.txt
+
+   ```shell
+   tshark -r whereiskey.pcapng -T fields -e usb.capdata > 1.txt
+   ```
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202124212.png)
+
+7. 编写脚本,将键盘上的数据读取出来
+
+   ```PYTHON
+   import os
+   normalKeys = {"04":"a", "05":"b", "06":"c", "07":"d", "08":"e", "09":"f", "0a":"g", "0b":"h", "0c":"i", "0d":"j", "0e":"k", "0f":"l", "10":"m", "11":"n", "12":"o", "13":"p", "14":"q", "15":"r", "16":"s", "17":"t", "18":"u", "19":"v", "1a":"w", "1b":"x", "1c":"y", "1d":"z","1e":"1", "1f":"2", "20":"3", "21":"4", "22":"5", "23":"6","24":"7","25":"8","26":"9","27":"0","28":"<RET>","29":"<ESC>","2a":"<DEL>", "2b":"\t","2c":"<SPACE>","2d":"-","2e":"=","2f":"[","30":"]","31":"\\","32":"<NON>","33":";","34":"'","35":"<GA>","36":",","37":".","38":"/","39":"<CAP>","3a":"<F1>","3b":"<F2>", "3c":"<F3>","3d":"<F4>","3e":"<F5>","3f":"<F6>","40":"<F7>","41":"<F8>","42":"<F9>","43":"<F10>","44":"<F11>","45":"<F12>"}
+   
+   shiftKeys = {"04":"A", "05":"B", "06":"C", "07":"D", "08":"E", "09":"F", "0a":"G", "0b":"H", "0c":"I", "0d":"J", "0e":"K", "0f":"L", "10":"M", "11":"N", "12":"O", "13":"P", "14":"Q", "15":"R", "16":"S", "17":"T", "18":"U", "19":"V", "1a":"W", "1b":"X", "1c":"Y", "1d":"Z","1e":"!", "1f":"@", "20":"#", "21":"$", "22":"%", "23":"^","24":"&","25":"*","26":"(","27":")","28":"<RET>","29":"<ESC>","2a":"<DEL>", "2b":"\t","2c":"<SPACE>","2d":"_","2e":"+","2f":"{","30":"}","31":"|","32":"<NON>","33":"\"","34":":","35":"<GA>","36":"<","37":">","38":"?","39":"<CAP>","3a":"<F1>","3b":"<F2>", "3c":"<F3>","3d":"<F4>","3e":"<F5>","3f":"<F6>","40":"<F7>","41":"<F8>","42":"<F9>","43":"<F10>","44":"<F11>","45":"<F12>"}
+   
+   nums = []
+   keys = open('usbdata.txt')
+   for line in keys:
+       if len(line)!=17: #首先过滤掉鼠标等其他设备的USB流量
+            continue
+       nums.append(line[0:2]+line[4:6]) #取一、三字节
+   keys.close()
+   output = ""
+   for n in nums:
+       if n[2:4] == "00" :
+           continue
+   
+       if n[2:4] in normalKeys:
+           if n[0:2]=="02": #表示按下了shift
+               output += shiftKeys [n[2:4]]
+           else :
+               output += normalKeys [n[2:4]]
+       else:
+           output += '[unknown]'
+   print('output :n' + output)
+   ```
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202124858.png)
+
+8. 这样看好像看不出来是什么,`<del>`删除的意思,我们试着把文字拼接起来
+
+   ```shell
+   nthk<DEL>epe<DEL>asy<DEL>swoi<DEL>rds<DEL>notu<DEL>hes<DEL>reb<DEL>?6<DEL>
+   #按照顺序将字母删除
+   nthepasswordnothere?
+   ```
+
+9. 密码不在这里?这就很迷惑了,我们打开还有个文档,最后一句`最后失去的`应该说的是我们删除的字母
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202125531.png)
+
+10. 我们将删除的字母拼接起来,发现这就是加密的KEY
+
+    ```shell
+    nthk<DEL>epe<DEL>asy<DEL>swoi<DEL>rds<DEL>notu<DEL>hes<DEL>reb<DEL>?6<DEL>
+    #删除的字母
+    keyisusb6
+    ```
+
+11. 解密一波,[解密网址](https://www.dcode.fr/beaufort-cipher),压缩包密码`happyeveryday`
+
+    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202125949.png)
+
+12. 打开文档,flag就出来了`bugku{What_a_enjoyable_music}`
+
+    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202130102.png)

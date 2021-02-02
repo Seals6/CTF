@@ -33,7 +33,7 @@
 
 - Bugku
   - Misc   刷题上传中 
-  - Crypto   刷题中
+  - Crypto   刷题上传中
   - Web   暂无计划
 
 

@@ -1607,3 +1607,26 @@ flag{3b4b5dccd2c008fe7e2664bd1bc19292}
 <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120145825.png" style="zoom:50%;" />
 
 `flag{ae58d0408e26e8f26a3c0589d23edeec}`
+
+
+
+### [WUSTCTF2020]alison_likes_jojo
+
+1. 解压压缩包，直到出现两个图片，拖进010发现第一张图片的`FF D9`后面有`PK`标识，手动分离出来压缩包
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210121135105.png)
+
+2. 发现压缩包加密了，尝试一下是不是伪加密，失败。看了下其他的信息，并没有提示，直接爆破。密码`888866`
+
+![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210121135239.png)
+
+3. 解压出来txt，里面是base64套娃，一直解码出来`killerqueen`，应该是另一张图片隐写的密码，穷举法发现是outguess隐写
+
+   ```shell 
+   outguess -k killerqueen -r jljy.jpg -t 1.txt
+   cat 1.txt
+   
+   wctf2020{pretty_girl_alison_likes_jojo}
+   ```
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210121135609.png)
