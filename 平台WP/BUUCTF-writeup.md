@@ -1630,3 +1630,38 @@ flag{3b4b5dccd2c008fe7e2664bd1bc19292}
    ```
 
    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210121135609.png)
+
+
+
+### [GUET-CTF2019]zips
+
+1. 解压出来，套娃压缩包，第一个压缩包有加密，尝试了一下伪加密未果，直接爆破`723456`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203193059.png)
+
+2. 解压出来，还有一层压缩包，用010打开发现是伪加密，修改源文件目录区的全局加密位`00`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203193303.png)
+
+3. 解压出来，又一个加密压缩包和脚本文件，用sublime打开
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203193449.png)
+
+4. 这个脚本大概意思是压缩包的密码是时间戳格式，我们在本机执行一下`python2 -c "print(__import__('time').time())"`发现是时间戳格式，精度为2位
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203194014.png)
+
+5. 但是出题的时候的时间戳肯定和现在不一样，我们可以查看文件创建的时间是2019年，往前推一下应该是在`1500000000-1599999999`范围
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203193724.png)
+
+6. 这里直接掩码爆破，掩码`15????????.??`一把梭
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203194304.png)
+
+7. 打开文件就拿到了`flag{fkjabPqnLawhvuikfhgzyffj}`
+
+   
+
+   
+

@@ -109,6 +109,46 @@
 
 
 
+### 做个游戏
+
+1. 打开是个java的游戏，用`java Decompiler`反编译一下，源码里就有flag
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203170808.png)
+
+2. `flag{RGFqaURhbGlfSmlud2FuQ2hpamk=}` ，base64解码一下
+
+   ```python
+   import base64
+   str="RGFqaURhbGlfSmlud2FuQ2hpamk="
+   flag=base64.b64decode(str)
+   print (flag)
+   #DajiDali_JinwanChiji
+   #拼接一下
+   flag{DajiDali_JinwanChiji}
+   ```
+
+
+
+### 三色绘恋
+
+1. 解压出来一张图片，拖进010发现`FF D9`末尾有`PK`压缩包标识，手动分离出来
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203173122.png)
+
+2. 提取的压缩包发现有加密，尝试伪加密失败，没有给hint，尝试修改图片高度，将图片属性中的高度宽度转为16进制`420=hex(01A4)`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203173306.png)
+
+3. 010中`ctrl+f`搜索高度16进制，修改为`03 A4`，密码就出来了
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203173529.png)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203173552.png)
+
+4. 密码`a56v1sa6fc`，解压出文档，拿下`fLag{M0_XIa0_Ju_T1an_XIa_Dl_1!}`
+
+
+
 ### 只有黑棋的棋盘
 
 1. 题目提示动手修复，那应该是修复文件了，下载解压一个围棋的图片，一个flag.zip压缩包
