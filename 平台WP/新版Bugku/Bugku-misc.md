@@ -361,6 +361,52 @@
 
 
 
+### 开始也是结束
+
+1. 解压出来一张图片，扔进010发现`FF D9`末尾有`PK`压缩包标识，手动分离出来
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210205114743.png)
+
+2. 提取分离出来的压缩包，再进行解压发现里面又套了一层加密压缩包，这里直接爆破，发现密码就是里面文件的名字
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210205114936.png)
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210205115030.png)
+
+3. 这里再进行解压，发现又是套娃压缩包，直接上脚本一把梭
+
+   ```python
+import zipfile
+   name = '11549'
+while True:
+       fz = zipfile.ZipFile(name + '.zip', 'r')
+       name=fz.filelist[0].filename[0:-4]
+       fz.extractall(pwd=bytes(name, 'utf-8'))
+       print(name)
+       fz.close()
+   ```
+   
+4. 解出来，套了大概980多层，最后一个压缩包是`bugku.zip`，爆破无解，想起hint`rockyou文件`，直接扔进kali进行爆破
+
+   ```shell
+   fcrackzip -D -u -p /usr/share/wordlists/rockyou.txt bugku.zip 
+   PASSWORD FOUND!!!!: pw == letsgetiton
+   
+   unzip -P letsgetition bugku.zip
+   ```
+
+5.  解压出来一张和原来开头一样的图片，真是和题目相对应呢，这里直接`strings`进行打印一下，也可以拖进010进行查找
+
+   ```shell
+   strings bugku.jpg | grep flag
+   
+   bugku_flag{miu_nian_da_ji}
+   ```
+
+6. 这道题有点像Y1ng师傅出的一道 `flag{miu_nian_da_ji}`
+
+  
+
 ### 有黑白棋的棋盘
 
 1. 下载出来一个压缩包，解压出来三个压缩包，就疯狂套娃呗
