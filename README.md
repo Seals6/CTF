@@ -39,9 +39,9 @@
 
 
 - SCCMCTF 
-  - Misc 规划中
-  - Crypto 规划中
-  - Web 规划中
+  - Misc 刷题上传
+  - Crypto 刷题上传
+  - Web 刷题中
   
   
 
