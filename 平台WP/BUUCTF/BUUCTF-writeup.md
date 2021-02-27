@@ -1662,6 +1662,29 @@ flag{3b4b5dccd2c008fe7e2664bd1bc19292}
 7. 打开文件就拿到了`flag{fkjabPqnLawhvuikfhgzyffj}`
 
    
+### [安洵杯 2019]Attack
+
+1. 首先下载下来是一个流量包，有两种方法，第一种拖进Wireshark分析流量，另一种是直接扔进kali进行分离，可以省去分离压缩包
+   这里对流量进行分析，可以看到他在扫网站后台目录
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-28%2012.29.15.png)
+
+2. 我们向后面继续分析，在一组流量中发现了php一句话木马上传<img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-28%2012.35.04.png" style="zoom:200%;" />
+
+3. 既然上传了木马，应该会连接并读取本机信息，继续向下分析，一组流量中有个flag.txt，并且pk开头，我们把这段转为hex，稍微处理下扔到010editor中。
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-28%2012.47.01.png" style="zoom:50%;" />
+   <img src="/Users/seals6/Library/Application Support/typora-user-images/截屏2020-12-28 12.47.36.png" style="zoom:50%;" />
+
+4. 解压需要密码，并且提示了，密码是administrator的秘密，应该是电脑用户的密码，我们继续对流量向下分析，发现了用户下载了lsass.dmp文件，我们将它导出
+   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-28%2012.54.26.png" style="zoom:50%;" />![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-28%2012.55.18.png)
+
+5. 扔进mimikatz分析密码，密码就出来了`W3lc0meToD0g3`
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-28%2012.56.43.png)
+6. 压缩包密码带进去，文档最后flag就出来了`D0g3{3466b11de8894198af3636c5bd1efce2}`![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-28%2012.58.25.png)
+
+
 
    
+
+   
+
 
