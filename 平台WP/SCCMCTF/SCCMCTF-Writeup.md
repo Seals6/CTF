@@ -20,7 +20,7 @@
 
 1. 一看题目就是`域名txt解析`
 
-![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210228124741666.png)
+<img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210228124741666.png" style="zoom:50%;" />
 
 2. 找一个[在线网站](http://dbcha.com/)
 
@@ -75,6 +75,7 @@
 7. 执行获得`flag{38a57032085441e7}`
    
    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210228132316525.png)
+   
    
 
 #### 流量分析
@@ -134,7 +135,35 @@
 
 ### Crypto
 
+#### MD5
 
+1. ```shell
+   题目
+   
+   Pass：c44143476376c62e3f45119f74056125
+   
+   * 格式 ti0s{***}  ***为解密密文 
+   ```
+
+2. 题目提示MD5，直接[MD5在线解密](https://www.cmd5.com/)，拼接一下`ti0s{ti0sctf}`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210301125451848.png)
+
+
+
+#### base64
+
+1. ```shell
+   题目：
+   
+   密文：ZEdrd2MyTjBaaTFVU1RCVExXTjBaZyUzRCUzRA==
+   
+   * 格式 ti0s{***}  ***为解密密文
+   ```
+
+2. base64套娃解码一下`ti0s{ti0sctf-TI0S-ctf}`
+
+   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210301125850964.png)
 
 
 
