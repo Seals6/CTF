@@ -38,13 +38,6 @@
 
 
 
-- SCCMCTF 
-  - Misc 刷题上传
-  - Crypto 刷题上传
-  - Web 刷题中
-  
-  
-
 - ctf.show
   
-  - Web入门 刷题中
+  - Web入门 `79/1000`刷题中

