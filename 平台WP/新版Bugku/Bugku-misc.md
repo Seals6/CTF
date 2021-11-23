@@ -11,7 +11,7 @@
 flag{小美小区名字拼音}
 ```
 
-![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210218180600.png)
+![](../pico-img/20210218180600.png)
 
 2. 提取图上的信息，首先图片确定地点，扔进搜狗识图发现是西安的大雁塔
 
@@ -25,13 +25,13 @@ flag{小美小区名字拼音}
 
 4. 这里我们调取西安地铁图，推演了一下发现是韦曲南地铁站附近
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210218181410.png)
+   ![](../pico-img/20210218181410.png)
 
    5. 这里我们打开高德地图，以韦曲南为中心1000米(大约800米)画圆，然后利用测距功能，从上一站航天城与圆产生交点的小区进行逐步尝试，最终发现是兰乔国际城
 
       `flag{lanqiaoguojicheng}`
 
-      ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210218181904.png)
+      ![](../pico-img/20210218181904.png)
 
 
 
@@ -88,11 +88,11 @@ flag{小美小区名字拼音}
 
 3. 转出来二维码缺乏定位角，添加上去
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321204116610.png)
+   ![](../pico-img/image-20210321204116610.png)
 
 4. 修复扫码得到`flag{QR_c0de_1s_1nterest1n9}`
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321204446845.png" alt="" style="zoom:50%;" />
+   <img src="../pico-img/image-20210321204446845.png" alt="" style="zoom:50%;" />
 
    
 
@@ -100,7 +100,7 @@ flag{小美小区名字拼音}
 
 1. 解压出来流量包，扔进wireshark，发现是ping流量包
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114212621.png)
+   ![](../pico-img/20210114212621.png)
 
 2. 发现每个流量包data附带一个字，前面四个包拼接起来就是`flag`，由于是icmp，没法用追踪功能，手撸`flag{dc76a1eee6e3822877ed627e0a04ab4a}`
 
@@ -112,11 +112,11 @@ flag{小美小区名字拼音}
 
 1. 解压出来有加密，但没给提示，怀疑是伪加密，拖进010修改原文件目录去全局加密位置
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120214405.png)
+   ![](../pico-img/20210120214405.png)
 
 2. 解压出来txt，发现是png文件，拖进010转成图片png，发现末尾有hint
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120214506.png)
+   ![](../pico-img/20210120214506.png)
 
 3. 找了几个软件，发现是中文的图片隐写助手，[下载地址](http://www.greenxf.com/soft/279692.html)
 
@@ -124,7 +124,7 @@ flag{小美小区名字拼音}
 
    `flag{Hel1o_Wor1e}`
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210120214756.png)
+   ![](../pico-img/20210120214756.png)
 
 
 
@@ -133,21 +133,21 @@ flag{小美小区名字拼音}
 
 1. 解压出来，一个加密的压缩包一张图片和介绍.txt，应该要在外面找密码,打开txt文件，发现作者添加了换行，在最后有hint
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202182933.png)
+   ![](../pico-img/20210202182933.png)
 
 2. 这里可以有两种做法，密码是年份，只有四位，可以直接爆破，还有一种文档写了女主参加的电影和图片可以直接搜索出来，我直接爆破密码`1992`
 
 3. 解压flag.txt出来
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202183213.png)
+   ![](../pico-img/20210202183213.png)
 
 4. 前面数字应该对应某种加密方式，`cC`这里后面明显分成了两半，应该是两种加密方法相加组合而成
 
 5. 前面一半类似hex，并且有32位，应该是MD5加密，后面类似base家族，`58`提示应该是base58
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202183925.png)
+   ![](../pico-img/20210202183925.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202184300.png)
+   ![](../pico-img/20210202184300.png)
 
 6. 拼接一下`flag{this_is_md5_and_base58}`
 
@@ -161,25 +161,25 @@ flag{小美小区名字拼音}
 
 3. 进入游戏会选择关卡，运行游戏时每个关卡都会留下save文件，把save文件拖进010观察
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118205106.png)
+   ![](../pico-img/20210118205106.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118205136.png)
+   ![](../pico-img/20210118205136.png)
 
 4. 通过第一关后发现在图中标记位变为了` 32`，应该时代表着关卡，每过一个关卡就会加一我们改为33，运行下一关`R`键重新载入就有password
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118205345.png)
+   ![](../pico-img/20210118205345.png)
 
 5. 我们改为33，原地去世，`R`键重新载入就有password
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118203927.png)
+   ![](../pico-img/20210118203927.png)
 
    
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118203914.png)
+   ![](../pico-img/20210118203914.png)
 
 5. 解压另一个压缩包，刷新提示很明显，就是F5隐写，txt文档中的password的emoji就是base100，解密后`66666666`
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210118204240.png)
+   ![](../pico-img/20210118204240.png)
 
 6. 打开提取的output.txt`bugku{F5_and_i_wanna_is_so_cool}`
 
@@ -191,13 +191,13 @@ flag{小美小区名字拼音}
 
 2. 将文件夹拖进沙箱或者新建虚拟机(之前安装过，酒托不进去了)，放入`C:\ProgramData`目录下，此目录是火绒默认隔离区的目录
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111140247.png)
+   ![](../pico-img/20210111140247.png)
 
 3. 安装火绒 ，完成后打开隔离区，发现flag
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111140432.png)
+   ![](../pico-img/20210111140432.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111140357.png)
+   ![](../pico-img/20210111140357.png)
 
 4. 导出flag文件`flag{Virus_traceability}`
 
@@ -207,7 +207,7 @@ flag{小美小区名字拼音}
 
 1. 打开是个java的游戏，用`java Decompiler`反编译一下，源码里就有flag
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203170808.png)
+   ![](../pico-img/20210203170808.png)
 
 2. `flag{RGFqaURhbGlfSmlud2FuQ2hpamk=}` ，base64解码一下
 
@@ -227,17 +227,17 @@ flag{小美小区名字拼音}
 
 1. 解压出来一张图片，拖进010发现`FF D9`末尾有`PK`压缩包标识，手动分离出来
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203173122.png)
+   ![](../pico-img/20210203173122.png)
 
 2. 提取的压缩包发现有加密，尝试伪加密失败，没有给hint，尝试修改图片高度，将图片属性中的高度宽度转为16进制`420=hex(01A4)`
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203173306.png)
+   ![](../pico-img/20210203173306.png)
 
 3. 010中`ctrl+f`搜索高度16进制，修改为`03 A4`，密码就出来了
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203173529.png)
+   ![](../pico-img/20210203173529.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210203173552.png)
+   ![](../pico-img/20210203173552.png)
 
 4. 密码`a56v1sa6fc`，解压出文档，拿下`fLag{M0_XIa0_Ju_T1an_XIa_Dl_1!}`
 
@@ -247,27 +247,27 @@ flag{小美小区名字拼音}
 
 1. 题目提示动手修复，那应该是修复文件了，下载解压一个围棋的图片，一个flag.zip压缩包
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111141036.png)
+   ![](../pico-img/20210111141036.png)
 
 2. 将图片拖进010，发现末尾有`50 4B`标识，应该是有压缩包隐写了，手动提取出来
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111141140.png)
+   ![](../pico-img/20210111141140.png)
 
 3. 打开提取的压缩包显示，没有分卷，在打开010，查看文件头发现是`50 4B 05 06`这是文件结束记录符，我们改为`50 4B 03 04`进行修复文件头，再将全局加密改为`00`，这样解压出来一个passwd.txt文档
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111141615.png)
+   ![](../pico-img/20210111141615.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111141701.png)
+   ![](../pico-img/20210111141701.png)
 
 4. 打开文档，发现字母有序排列，并逐渐向前减一，我们将其补全，按照图片上黑棋坐标点，对应txt坐标写出来相应的字母，这里我横着读了一遍，竖着读了一遍，最终发现是竖着从下往上才能正确排列字母顺序，压缩包密码是大写`GOODGOPLAY`
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111142126.png)
+   ![](../pico-img/20210111142126.png)
 
 5. 解压flag.zip出来一张图片，拖进010，发现CRC报错，修改高度一把梭`flag{1t_1s_1nterest1n9}`
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111142453.png)
+   ![](../pico-img/20210111142453.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210111142519.png)
+   ![](../pico-img/20210111142519.png)
 
 ### baby_flag.txt
 
@@ -275,41 +275,41 @@ flag{小美小区名字拼音}
 
 1. 解压出来一个txt，打开`JFIF`标识，改为jpg拖进010
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202174814.png)
+   ![](../pico-img/20210202174814.png)
 
 2. 发现末尾有`raR`开头标识，怀疑文件头被修改，手动分离出来
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202175145.png)
+   ![](../pico-img/20210202175145.png)
 
 3. 修复Rar文件头`52 21 72 21`保存为rar文件，打开压缩包发现加密了
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202175604.png)
+   ![](../pico-img/20210202175604.png)
 
 4. 在010中发现末尾有一串hex，解码后，base64再解一次发现并无卵用
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202175710.png)
+   ![](../pico-img/20210202175710.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202180002.png)
+   ![](../pico-img/20210202180002.png)
 
 5. 这里想起bugku题目提示还可以再高一点，应该是还可以修改图片高度
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202180108.png)
+   ![](../pico-img/20210202180108.png)
 
 6. 我们找到图片属性高度转为hex，在010中进行搜索对应位置，改高度
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202180658.png)
+   ![](../pico-img/20210202180658.png)
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202180739.png" style="zoom:50%;" />
+   <img src="../pico-img/20210202180739.png" style="zoom:50%;" />
    
 7. 密码`0q1W2e3R4t`，解压压缩包，打开txt
    
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202181037.png)
+   ![](../pico-img/20210202181037.png)
 
 8. 这里提示`ugly programming language`应该是某种编程语言，google下，发现是`Malbolge`
    
    [Malbolge在线编译](https://malbolge.doleczek.pl/)
    
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202181544.png)
+   ![](../pico-img/20210202181544.png)
    
    
    
@@ -325,33 +325,33 @@ flag{小美小区名字拼音}
 
 1. 这里解压出来3个文件，一个hint.png，用word打开，里面给了一串没见过的字符串，我也不知道是啥`8:V5Y:7,Y,3MU=$8D:D%11&9O6BY .G,M`
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202170503.png)
+   ![](../pico-img/20210202170503.png)
 
 2. 前面无解没思路，打开压缩包发现加密了，应该不是伪加密，还有一张图片，拖进010，发现末尾有base64
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202170725.png)
+   ![](../pico-img/20210202170725.png)
 
 3. 我这里尝试进行base64解码，并不是常见的内容，根据题目善用工具，应该是某种工具加密了，这里我使用google对前六个字母进行搜索`VVGEC8`，发现了个类似的问题
 
    ps：别用百度，我试过了
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202170915.png)
+   ![](../pico-img/20210202170915.png)
 
 4. 这个问题是说图片结尾后面跟了base64字母与我搜索的`VVGEC8`一样，是个软件`Free File Camouflage`
 
    [下载地址](http://www.myportablesoftware.com/freefilecamouflage.aspx)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202171439.png)
+   ![](../pico-img/20210202171439.png)
 
 5. 有工具就好办了，选择解密一把梭
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202171645.png)
+   ![](../pico-img/20210202171645.png)
 
 6. 打开解密出来的的doc，显示`远在天边近在眼前`但是却没有密码，应该是隐藏了文字，我们设置显示隐藏文字
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202171931.png)
+   ![](../pico-img/20210202171931.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202172004.png)
+   ![](../pico-img/20210202172004.png)
 
 7. 解压压缩包，压缩包注释里提示是webp格式，图片填上后缀名
 
@@ -362,7 +362,7 @@ flag{小美小区名字拼音}
    bugku{rea1ly_miss_yoU}
    ```
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202172458.png)
+   ![](../pico-img/20210202172458.png)
 
    
 
@@ -372,11 +372,11 @@ flag{小美小区名字拼音}
 
    [UUencode](https://www.dcode.fr/uu-encoding)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202173122.png)
+   ![](../pico-img/20210202173122.png)
 
    [base85](https://www.better-converter.com/Encoders-Decoders/ASCII85-Decoder)
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202173227.png" style="zoom:50%;" />
+   <img src="../pico-img/20210202173227.png" style="zoom:50%;" />
 
 
 
@@ -384,15 +384,15 @@ flag{小美小区名字拼音}
 
 1. 解压出来一张图片，拉入010没有发现其他异常，考虑LSB隐写
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2021-01-03%20%E4%B8%8B%E5%8D%886.04.17.png" style="zoom:50%;" />
+   <img src="../pico-img/%E6%88%AA%E5%B1%8F2021-01-03%20%E4%B8%8B%E5%8D%886.04.17.png" style="zoom:50%;" />
 
 2. stegsolve发现RGB 0通道上方有东西
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2021-01-03%20%E4%B8%8B%E5%8D%886.05.35.png" style="zoom:50%;" />
+   <img src="../pico-img/%E6%88%AA%E5%B1%8F2021-01-03%20%E4%B8%8B%E5%8D%886.05.35.png" style="zoom:50%;" />
 
 3. 提取，调整调整一下顺序，preview一下`flag{Png_Lsb_Y0u_k0nw!}`
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2021-01-03%20%E4%B8%8B%E5%8D%886.06.15.png" alt="" style="zoom:33%;" />
+   <img src="../pico-img/%E6%88%AA%E5%B1%8F2021-01-03%20%E4%B8%8B%E5%8D%886.06.15.png" alt="" style="zoom:33%;" />
 
 
 
@@ -400,23 +400,23 @@ flag{小美小区名字拼音}
 
 1. 题目提示flag好像隐藏在图片中，下载下来1个压缩包，解压出来一张图片还有加密的两个压缩包，图片明显下面还有东西，怀疑改了尺寸
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-31%20%E4%B8%8B%E5%8D%882.34.04.png" style="zoom:50%;" />
+   <img src="../pico-img/%E6%88%AA%E5%B1%8F2020-12-31%20%E4%B8%8B%E5%8D%882.34.04.png" style="zoom:50%;" />
 
 2. 拖入010editor，crc直接报错，修改高一把嗦
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-31%20%E4%B8%8B%E5%8D%882.35.25.png" style="zoom:50%;" />
+   <img src="../pico-img/%E6%88%AA%E5%B1%8F2020-12-31%20%E4%B8%8B%E5%8D%882.35.25.png" style="zoom:50%;" />
 
 3. 图片提示`B:One2021@`
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-31%20%E4%B8%8B%E5%8D%882.36.19.png" style="zoom:50%;" />
+   <img src="../pico-img/%E6%88%AA%E5%B1%8F2020-12-31%20%E4%B8%8B%E5%8D%882.36.19.png" style="zoom:50%;" />
 
 4. 第二个压缩包伪加密，图片详细信息中的属性有第二个提示`A:Just`
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-31%20%E4%B8%8B%E5%8D%882.41.20.png" style="zoom:33%;" />
+   <img src="../pico-img/%E6%88%AA%E5%B1%8F2020-12-31%20%E4%B8%8B%E5%8D%882.41.20.png" style="zoom:33%;" />
 
 5. 两个密码拼接一下`JustOne2021@`为第三个压缩包密码，解压即得`flag{Hello2021_Good}`
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E6%88%AA%E5%B1%8F2020-12-31%20%E4%B8%8B%E5%8D%882.42.22.png" style="zoom:35%;" />
+   <img src="../pico-img/%E6%88%AA%E5%B1%8F2020-12-31%20%E4%B8%8B%E5%8D%882.42.22.png" style="zoom:35%;" />
 
 
 
@@ -430,26 +430,26 @@ flag{小美小区名字拼音}
 
 2. 拖入010观察，发现有两段FFD8，将两个文件进行分离,得到两个图片
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E5%9B%BE%E7%89%87%201.png)
+   ![](../pico-img/%E5%9B%BE%E7%89%87%201.png)
 
 3. 继续分析1.jpg（原fl.jpg），文件尾部FFD9后面有一段加密文字，为base64加密
 
 得到一段hex，将hex导入至FFD9之前，保存文件
 
-<img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E5%9B%BE%E7%89%87%202.png" style="zoom:48%;" />
+<img src="../pico-img/%E5%9B%BE%E7%89%87%202.png" style="zoom:48%;" />
 
 4. 找到文件00C007-00C00A这段为文件的宽高，修改至宽高一样得到图片，
 
-  ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E5%9B%BE%E7%89%87%203.png)
+  ![](../pico-img/%E5%9B%BE%E7%89%87%203.png)
 
 5. 很明显，图片显示不正常，但是图片下面显示关键词`Nice}`
 6. 猜测，刚刚导入的hex为2.jpg中结尾，如上找到文件端00A003-00A006为图片宽高，修改成一致保存,得到正常图片
 
-​     <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E5%9B%BE%E7%89%87%204.png" style="zoom: 50%;" /> 
+​     <img src="../pico-img/%E5%9B%BE%E7%89%87%204.png" style="zoom: 50%;" /> 
 
 6. 同理，在2.jpg后面也有段base64，解码导入010之后，修改宽高一致，得到图片
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/%E5%9B%BE%E7%89%87%205.png" style="zoom:48%;" />
+   <img src="../pico-img/%E5%9B%BE%E7%89%87%205.png" style="zoom:48%;" />
 
 7. 稍微拼接一下`flag{JFIF_1s_very_Nice}`
 
@@ -459,13 +459,13 @@ flag{小美小区名字拼音}
 
 1. 解压出来一张图片，扔进010发现`FF D9`末尾有`PK`压缩包标识，手动分离出来
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210205114743.png)
+   ![](../pico-img/20210205114743.png)
 
 2. 提取分离出来的压缩包，再进行解压发现里面又套了一层加密压缩包，这里直接爆破，发现密码就是里面文件的名字
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210205114936.png)
+   ![](../pico-img/20210205114936.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210205115030.png)
+   ![](../pico-img/20210205115030.png)
 
 3. 这里再进行解压，发现又是套娃压缩包，直接上脚本一把梭
 
@@ -505,11 +505,11 @@ flag{小美小区名字拼音}
 
 1. 解压出来，一张图片，拖进010，发现末尾有个压缩包`7z`的文件头标识，手动分离出来
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321205134873.png)
+   ![](../pico-img/image-20210321205134873.png)
 
 2. 保存出来`1.7z`，打开发现文件已损坏，再重新观察文件头，发现是`37 7A 03 04`有点像是`zip`的文件头`50 4B 03 04`，观察文件尾`37 7A 05 06`证实我的想法
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321205420557.png)
+   ![](../pico-img/image-20210321205420557.png)
    
 3. 观察一下，需要替换一共七个地方
 
@@ -521,7 +521,7 @@ flag{小美小区名字拼音}
 
 4. 替换出来成功解压，压缩包又是加密的，应该是套娃解密
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321205812482.png)
+   ![](../pico-img/image-20210321205812482.png)
 
 5. 打开`hint.txt`，进行base64解码
 
@@ -535,45 +535,45 @@ flag{小美小区名字拼音}
 
 6. 打开图片，上面的文字应该就是所说的古老的文字，因为有点像数字，想到了甲骨文中的数字，百度一下`14582978`
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321210254747.png)
+   ![](../pico-img/image-20210321210254747.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321210330651.png)
+   ![](../pico-img/image-20210321210330651.png)
 
 7. 输入`14582978`解开压缩包，发现里面又套了一层，图片和一个压缩包，因为图片是bmp，考虑`wbStego4open`，解出来`1.txt.jpg`
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321210724217.png)
+   ![](../pico-img/image-20210321210724217.png)
    
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321210929238.png)
+   ![](../pico-img/image-20210321210929238.png)
    
 8. 这里打不开，用010打开，发现是乱码，这里问了问大佬，搜索`key`，会发现密码...我哭了出来😭`key:988%^&*cool`
    
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321211146074.png)
+   ![](../pico-img/image-20210321211146074.png)
    
 9. 输入`988%^&*cool`解开压缩包，得到两个txt
    
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321211504458.png)
+   ![](../pico-img/image-20210321211504458.png)
    
 10. 打开hint.txt，提示是`aes256加密 密码99633`
 
-    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321211710078.png)
+    ![](../pico-img/image-20210321211710078.png)
 
 11. 我自己找了几个在线网站没转出来，看了下wp，用`openssl`
 
-    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321212039797.png)
+    ![](../pico-img/image-20210321212039797.png)
 
 12. 打开1.txt，发现是音乐字符，直接音乐符号密码解密
 
-    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321212134452.png)
+    ![](../pico-img/image-20210321212134452.png)
 
 13. 但是直接解码是错误的，发现一共有两行，只有第二行可以解出来字符`cool`
 
-    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321212301643.png)
+    ![](../pico-img/image-20210321212301643.png)
 
-    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321212402477.png)
+    ![](../pico-img/image-20210321212402477.png)
 
 14. 用第二行的字符作为密码`cool`解第一行试试`bugku{aess_s0_be@utiFUl_#nd_1nteresT%ng}`
 
-    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210321212536537.png)
+    ![](../pico-img/image-20210321212536537.png)
 
 
 
@@ -587,11 +587,11 @@ flag{小美小区名字拼音}
 
 2. 拿去解码发现看不到，应该是字体编码，后面才知道是题目的名字英文`wingdings`，用word换成相应字体编码打开
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210506173623749.png)
+   ![](../pico-img/image-20210506173623749.png)
 
 3. 据原wp，可直接转换其他文字格式或使用`qq`，但是可能我mac的原因这些方法都无法转换，虚拟机跑了一个qq，复制到聊天框`Bugku{W0rd_1s_the_be5t_IDE}`
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/image-20210506173840619.png" style="zoom: 25%;" />
+   <img src="../pico-img/image-20210506173840619.png" style="zoom: 25%;" />
 
    
 
@@ -600,13 +600,13 @@ flag{小美小区名字拼音}
 
 1. 下载出来一个压缩包，解压出来三个压缩包，就疯狂套娃呗
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114213348.png)
+   ![](../pico-img/20210114213348.png)
 
 2. 第一个压缩包写了`4easynum`应该是爆破了，上工具密码`7760`
 
 3. 解压出来一个图片和一个hint
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114213552.png)
+   ![](../pico-img/20210114213552.png)
 
    ![](C:\Users\Seals6\AppData\Roaming\Typora\typora-user-images\image-20210114213617768.png)
 
@@ -616,37 +616,37 @@ flag{小美小区名字拼音}
 
 5. 解出来`bugkupasswd`，刚刚提示了这个密码是棋盘的压缩包，解压出来，一张围棋图片，拖进010，发现备注里又有一个hint，base58转一下，我确实没看懂
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114214328.png)
+   ![](../pico-img/20210114214328.png)
 
 6. 问了出题人，意思是密码表在围棋中，这里因为图片前面很像`canyou???`以为是猜字符卡了很久，后面问了一血Tokeii大佬，说是图片中围棋的提子，吃了不会下围棋的亏解出来`goodctfer`
 
-![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114214452.png)
+![](../pico-img/20210114214452.png)
 
 7. 解压出来一张图片，压缩包题目height提示很明显，应该是修改了高，拖进010修改一下高度`flag{new_bugku_is_very_cool}`
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210114215016.png)
+   ![](../pico-img/20210114215016.png)
 
 ### baby_misc
 
 1. 解压出来三个文件，一个加密压缩包，一个jpg，一个hint文档，我们打开txt
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117152323.png)
+   ![](../pico-img/20210117152323.png)
 
 2. 我们打开jpg，发现无法预览，猜测文件头格式损坏，拖进010发现文件头是`FF D8`，文件尾是png格式，所以我们改为png文件头`89 50 4E 47 0D 0A 1A 0A 00 00 00 0D`
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117152717.png)
+   ![](../pico-img/20210117152717.png)
 
    
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117152759.png)
+   ![](../pico-img/20210117152759.png)
 
 3. 发现图片能够正常预览，仔细观察文件格式发现里面还有一张png图片，手动分离出来
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117153030.png)
+   ![](../pico-img/20210117153030.png)
 
 4. 于是发现是一摸一样的图片，结合py3提示应该是盲水印隐写
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117153201.png)
+   ![](../pico-img/20210117153201.png)
 
 5. 扔进kali，跑一下脚本，得到flag.png
 
@@ -654,11 +654,11 @@ flag{小美小区名字拼音}
    python3 bwmforpy3.py decode 1.png 2.png flag.png
    ```
 
-   <img src="https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117153408.png" style="zoom:50%;" />
+   <img src="../pico-img/20210117153408.png" style="zoom:50%;" />
 
 6. 需要放大仔细看得到密码`passwd:wowblind`，解压压缩包，得到一个加密的flag.zip和password.txt，打开txt
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117153822.png)
+   ![](../pico-img/20210117153822.png)
 
 7. 出题人写错了应该e=65537，上RSA脚本
 
@@ -733,7 +733,7 @@ flag{小美小区名字拼音}
    
 8. 解压flag压缩包，得到一个flag.txt
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117155909.png)
+   ![](../pico-img/20210117155909.png)
 
 9. 这个应该是base64隐写，但是把等号转换为了加号，使用`ctrl+h`替换+号，上base64stego脚本
 
@@ -761,7 +761,7 @@ flag{小美小区名字拼音}
 
 10. 解出来`bgtu{0cfguo_3}kdr`，因为提交格式为`Bugku{}`应该是栅栏密码，普通型试过不对，应该是w型栅栏密码，成功`bugku{g0od_ctf3r}`提交时要把b改为大写
 
-    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210117160353.png)
+    ![](../pico-img/20210117160353.png)
 
    
 
@@ -769,25 +769,25 @@ flag{小美小区名字拼音}
 
 1. 此题来自棋王Mumuzi，下载发现是一段MP3，快进听歌的时候发现最后声音有点不对，拖进au查看频谱发现`Beaufort Cipher` 上网搜了一下是个加密方式
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202122307.png)
+   ![](../pico-img/20210202122307.png)
 
 2. 我们将音乐拖入010中，发现末尾有`PK`标识，手动分离压缩包，发现末尾还有一段hint`pay attention,After encryption is fsjcwymauudmwogqbdrsd` 意思是这个是密文，要去找key才能解出明文
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202122425.png)
+   ![](../pico-img/20210202122425.png)
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202122621.png)
+   ![](../pico-img/20210202122621.png)
 
 3. 我们将压缩包解压出来，打开flag发现加密了，应该是要找密码，密码应该与上面的hint明文有关
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202122713.png)
+   ![](../pico-img/20210202122713.png)
 
 4. 用wireshark打开流量包，发现是USB流量
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202122904.png)
+   ![](../pico-img/20210202122904.png)
 
 5. 根据HID发现，键盘数据包的数据长度为8个字节，敲击键盘信息在第3个字节，应该是键盘的流量包
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202123318.png)
+   ![](../pico-img/20210202123318.png)
 
 6. 这里可以对照官方的文档进行手动翻译，我嫌麻烦，这里采用的南方大佬的脚本来做的，先将流量包扔进kali ，将数据导出成1.txt
 
@@ -795,7 +795,7 @@ flag{小美小区名字拼音}
    tshark -r whereiskey.pcapng -T fields -e usb.capdata > 1.txt
    ```
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202124212.png)
+   ![](../pico-img/20210202124212.png)
 
 7. 编写脚本,将键盘上的数据读取出来
 
@@ -827,7 +827,7 @@ flag{小美小区名字拼音}
    print('output :n' + output)
    ```
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202124858.png)
+   ![](../pico-img/20210202124858.png)
 
 8. 这样看好像看不出来是什么,`<del>`删除的意思,我们试着把文字拼接起来
 
@@ -839,7 +839,7 @@ flag{小美小区名字拼音}
 
 9. 密码不在这里?这就很迷惑了,我们打开还有个文档,最后一句`最后失去的`应该说的是我们删除的字母
 
-   ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202125531.png)
+   ![](../pico-img/20210202125531.png)
 
 10. 我们将删除的字母拼接起来,发现这就是加密的KEY
 
@@ -851,8 +851,8 @@ flag{小美小区名字拼音}
 
 11. 解密一波,[解密网址](https://www.dcode.fr/beaufort-cipher),压缩包密码`happyeveryday`
 
-    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202125949.png)
+    ![](../pico-img/20210202125949.png)
 
 12. 打开文档,flag就出来了`bugku{What_a_enjoyable_music}`
 
-    ![](https://aliyunpico.oss-cn-chengdu.aliyuncs.com/img/20210202130102.png)
+    ![](../pico-img/20210202130102.png)

